@@ -466,8 +466,8 @@ public class EmailServices {
 
         ScreenStringRenderer screenStringRenderer = null;
         try {
-            screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", "screen.name", dctx.getDelegator()), 
-                    EntityUtilProperties.getPropertyValue("widget", "screen.screenrenderer", dctx.getDelegator()));
+            screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", dctx.getDelegator()),
+                    EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", dctx.getDelegator()));
         } catch (TemplateException e) {
             Debug.logError(e, "Error rendering screen for email: " + e.toString(), module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "CommonEmailSendRenderingScreenEmailError", UtilMisc.toMap("errorString", e.toString()), locale));

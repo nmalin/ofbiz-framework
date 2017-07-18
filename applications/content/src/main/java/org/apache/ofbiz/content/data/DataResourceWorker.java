@@ -99,7 +99,7 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
 
     public static final String module = DataResourceWorker.class.getName();
     public static final String err_resource = "ContentErrorUiLabels";
-    private static final String formrenderer = UtilProperties.getPropertyValue("widget", "screen.formrenderer");
+    private static final String formrenderer = UtilProperties.getPropertyValue("commonWidget", "screen.formrenderer");
 
     /**
      * Traverses the DataCategory parent/child structure and put it in categoryNode. Returns non-null error string if there is an error.
@@ -724,7 +724,7 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
                     ScreenRenderer screens = (ScreenRenderer) context.get("screens");
                     if (screens == null) {
                      // TODO: replace "screen" to support dynamic rendering of different output
-                        ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", "screen.name", delegator), EntityUtilProperties.getPropertyValue("widget", "screen.screenrenderer", delegator));
+                        ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", delegator), EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", delegator));
                         screens = new ScreenRenderer(out, context, screenStringRenderer);
                         screens.getContext().put("screens", screens);
                     }
@@ -756,7 +756,7 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
                 try {
                     Map<String, Object> context = UtilGenerics.checkMap(templateContext.get("globalContext"));
                     context.put("locale", locale);
-                    context.put("simpleEncoder", UtilCodec.getEncoder(UtilProperties.getPropertyValue("widget", "screen.encoder")));
+                    context.put("simpleEncoder", UtilCodec.getEncoder(UtilProperties.getPropertyValue("commonWidget", "screen.encoder")));
                     HttpServletRequest request = (HttpServletRequest) context.get("request");
                     HttpServletResponse response = (HttpServletResponse) context.get("response");
                     ModelForm modelForm = null;

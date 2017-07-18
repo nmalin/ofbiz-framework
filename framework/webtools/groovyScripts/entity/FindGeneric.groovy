@@ -70,7 +70,7 @@ if (modelEntity) {
         modelForm = entry.getValue()
     }
 
-    MacroFormRenderer renderer = new MacroFormRenderer(UtilProperties.getPropertyValue("widget", "screen.formrenderer"), request, response)
+    MacroFormRenderer renderer = new MacroFormRenderer(UtilProperties.getPropertyValue("commonWidget", "screen.formrenderer"), request, response)
     FormRenderer dynamicAutoEntitySearchFormRenderer = new FormRenderer(modelForm, renderer)
     Writer writer = new StringWriter()
     dynamicAutoEntitySearchFormRenderer.render(writer, context)
@@ -99,7 +99,7 @@ if (modelEntity) {
         Map.Entry<String, ModelForm> entry = modelFormMap.entrySet().iterator().next()
         modelForm = entry.getValue()
     }
-    renderer = new MacroFormRenderer(UtilProperties.getPropertyValue("widget", "screen.formrenderer"), request, response)
+    renderer = new MacroFormRenderer(UtilProperties.getPropertyValue("commonWidget", "screen.formrenderer"), request, response)
     FormRenderer dynamicAutoEntityListFormRenderer = new FormRenderer(modelForm, renderer)
     Writer writerList = new StringWriter()
     dynamicAutoEntityListFormRenderer.render(writerList, context)

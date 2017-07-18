@@ -180,8 +180,8 @@ public class ScreenFopViewHandler extends AbstractViewHandler {
         try {
             Delegator delegator = (Delegator) request.getAttribute("delegator");
             Writer writer = new StringWriter();
-            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", "screen.name", delegator),
-                    EntityUtilProperties.getPropertyValue("widget", "screen.screenrenderer", delegator));
+            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", delegator),
+                    EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", delegator));
 
             ScreenRenderer screens = new ScreenRenderer(writer, null, screenStringRenderer);
             screens.populateContextForRequest(request, response, servletContext);

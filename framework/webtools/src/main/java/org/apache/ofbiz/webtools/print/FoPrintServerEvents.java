@@ -101,8 +101,8 @@ public class FoPrintServerEvents {
         // render and obtain the XSL-FO
         Writer writer = new StringWriter();
         try {
-            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", "screen.name", dctx.getDelegator()),
-                    EntityUtilProperties.getPropertyValue("widget", "screen.screenrenderer", dctx.getDelegator()));
+            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", dctx.getDelegator()),
+                    EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", dctx.getDelegator()));
             ScreenRenderer screens = new ScreenRenderer(writer, null, screenStringRenderer);
             screens.populateContextForService(dctx, parameters);
             screens.render(screen);

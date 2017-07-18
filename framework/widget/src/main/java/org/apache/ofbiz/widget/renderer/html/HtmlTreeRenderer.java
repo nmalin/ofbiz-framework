@@ -339,8 +339,8 @@ public class HtmlTreeRenderer extends HtmlWidgetRenderer implements TreeStringRe
         } else {
             if (screenStringRenderer == null) {
                 try {
-                    screenStringRenderer = new MacroScreenRenderer(UtilProperties.getPropertyValue("widget", "screen.name"), 
-                            UtilProperties.getPropertyValue("widget", "screen.screenrenderer"));
+                    screenStringRenderer = new MacroScreenRenderer(UtilProperties.getPropertyValue("commonWidget", "screen.name"),
+                            UtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer"));
                 } catch (TemplateException | IOException e) {
                     e.printStackTrace();
                 }

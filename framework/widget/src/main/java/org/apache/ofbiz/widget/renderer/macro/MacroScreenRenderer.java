@@ -77,7 +77,7 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
     private String rendererName;
     private int elementId = 999;
     protected boolean widgetCommentsEnabled = false;
-    private static final String formrenderer = UtilProperties.getPropertyValue("widget", "screen.formrenderer");
+    private static final String formrenderer = UtilProperties.getPropertyValue("commonWidget", "screen.formrenderer");
     private int screenLetsIdCounter = 1;
 
     public MacroScreenRenderer(String name, String macroLibraryPath) throws TemplateException, IOException {
@@ -621,7 +621,7 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
                 MenuStringRenderer savedRenderer = (MenuStringRenderer) context.get("menuStringRenderer");
                 MenuStringRenderer renderer;
                 try {
-                    renderer = new MacroMenuRenderer(EntityUtilProperties.getPropertyValue("widget", "screen.menurenderer", (Delegator) request.getAttribute("delegator")),
+                    renderer = new MacroMenuRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.menurenderer", (Delegator) request.getAttribute("delegator")),
                             request, response);
                     context.put("menuStringRenderer", renderer);
                     navMenu.renderWidgetString(sb, context, this);

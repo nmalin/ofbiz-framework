@@ -64,10 +64,10 @@ public class MacroScreenViewHandler extends AbstractViewHandler {
 
     private ScreenStringRenderer loadRenderers(HttpServletRequest request, HttpServletResponse response,
             Map<String, Object> context, Writer writer) throws GeneralException, TemplateException, IOException {
-        String screenMacroLibraryPath = UtilProperties.getPropertyValue("widget", getName() + ".screenrenderer");
-        String formMacroLibraryPath = UtilProperties.getPropertyValue("widget", getName() + ".formrenderer");
-        String treeMacroLibraryPath = UtilProperties.getPropertyValue("widget", getName() + ".treerenderer");
-        String menuMacroLibraryPath = UtilProperties.getPropertyValue("widget", getName() + ".menurenderer");
+        String screenMacroLibraryPath = UtilProperties.getPropertyValue("commonWidget", getName() + ".screenrenderer");
+        String formMacroLibraryPath = UtilProperties.getPropertyValue("commonWidget", getName() + ".formrenderer");
+        String treeMacroLibraryPath = UtilProperties.getPropertyValue("commonWidget", getName() + ".treerenderer");
+        String menuMacroLibraryPath = UtilProperties.getPropertyValue("commonWidget", getName() + ".menurenderer");
         Map<String, Object> userPreferences = UtilGenerics.cast(context.get("userPreferences"));
         if (userPreferences != null) {
             String visualThemeId = (String) userPreferences.get("VISUAL_THEME");
@@ -110,7 +110,7 @@ public class MacroScreenViewHandler extends AbstractViewHandler {
                 }
             }
         }
-        ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(UtilProperties.getPropertyValue("widget", getName()
+        ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(UtilProperties.getPropertyValue("commonWidget", getName()
                 + ".name"), screenMacroLibraryPath);
         if (!formMacroLibraryPath.isEmpty()) {
             FormStringRenderer formStringRenderer = new MacroFormRenderer(formMacroLibraryPath, request, response);
@@ -133,11 +133,11 @@ public class MacroScreenViewHandler extends AbstractViewHandler {
             Delegator delegator = (Delegator) request.getAttribute("delegator");
             // compress output if configured to do so
             if (UtilValidate.isEmpty(encoding)) {
-                encoding = EntityUtilProperties.getPropertyValue("widget", getName() + ".default.encoding", "none", delegator);
+                encoding = EntityUtilProperties.getPropertyValue("commonWidget", getName() + ".default.encoding", "none", delegator);
             }
             boolean compressOutput = "compressed".equals(encoding);
             if (!compressOutput) {
-                compressOutput = "true".equals(EntityUtilProperties.getPropertyValue("widget", getName() + ".compress", delegator));
+                compressOutput = "true".equals(EntityUtilProperties.getPropertyValue("commonWidget", getName() + ".compress", delegator));
             }
             if (!compressOutput && this.servletContext != null) {
                 compressOutput = "true".equals(this.servletContext.getAttribute("compressHTML"));
@@ -152,8 +152,8 @@ public class MacroScreenViewHandler extends AbstractViewHandler {
             ScreenStringRenderer screenStringRenderer = loadRenderers(request, response, context, writer);
             ScreenRenderer screens = new ScreenRenderer(writer, context, screenStringRenderer);
             context.put("screens", screens);
-            context.put("simpleEncoder", UtilCodec.getEncoder(UtilProperties.getPropertyValue("widget", getName() + ".encoder")));
-            screenStringRenderer.renderScreenBegin(writer, context);
+            context.put("simpleEncoder", UtilCodec.getEncoder(UtilProperties.getPropertyValue("commonWidget", getName() + ".encoder")));
+             screenStringRenderer.renderScreenBegin(writer, context);
             screens.render(page);
             screenStringRenderer.renderScreenEnd(writer, context);
             writer.flush();
