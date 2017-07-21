@@ -62,7 +62,7 @@ margin: 1em;
         <tr<#if visualTheme.visualThemeId == visualThemeId> class="selected"</#if>>
           <td>
             <form name="SetUserPreferences_${visualTheme.visualThemeId}" method="post"
-                action="<@ofbizUrl>setUserPreference</@ofbizUrl>">
+                action="<@ofbizUrl>selectTheme</@ofbizUrl>">
               <input type="hidden" name="userPrefGroupTypeId" value="GLOBAL_PREFERENCES"/>
               <input type="hidden" name="userPrefTypeId" value="VISUAL_THEME"/>
               <input type="hidden" name="userPrefValue" value="${visualTheme.visualThemeId}"/>

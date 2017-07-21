@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<theme name="common"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
+    <visual-themes>
+        <visual-theme id="COMMON"/>
+    </visual-themes>
+    <default-view-size value="20"/>
+    <autocompleter
+            default-view-size="10"
+            default-min-lenght="2"
+            default-delay="300"
+            display-return-field="true"/>
+    <lookup
+            position="topleft"
+            width="640"
+            height="500"/>
+    <layered-modal
+            width="800"
+            height="600"/>
+    <properties>
+        <property name="jgrowl.position" value="center" type="String"/><!--possible value: top-left, top-right, bottom-left, bottom-right, center-->
+        <property name="jgrowl.width" value="800" type="Integer"/>
+        <property name="jgrowl.height" value="" type="Integer"/>
+        <property name="jgrowl.speed" value="100" type="Integer"/>
+    </properties>
+
+    <templates>
+        <template name="screen" type="html" content-type="UTF-8" encoding="none" encoder="html" compress="false">
+            <template-file widget="screen" location="component://common-theme/template/macro/HtmlScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/HtmlFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/HtmlTreeMacroLibrary.ftl"/>
+            <template-file widget="menu" location="component://common-theme/template/macro/HtmlMenuMacroLibrary.ftl"/>
+        </template>
+        <template name="screenxml" type="xml" content-type="UTF-8" encoding="none" encoder="xml">
+            <template-file widget="screen" location="component://common-theme/template/macro/XmlScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/XmlFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/XmlTreeMacroLibrary.ftl"/>
+        </template>
+        <template name="screenxls" type="xls" content-type="application/vnd.ms-excel" encoding="none" encoder="html">
+            <template-file widget="screen" location="component://common-theme/template/macro/XlsScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/XlsFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/XlsTreeMacroLibrary.ftl"/>
+        </template>
+        <template name="screenfop" type="xsl-fo" content-type="application/pdf" encoding="none">
+            <template-file widget="screen" location="component://common-theme/template/macro/FoScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/FoFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/FoTreeMacroLibrary.ftl"/>
+        </template>
+        <template name="screentext" type="text" content-type="UTF-8" encoding="none">
+            <template-file widget="screen" location="component://common-theme/template/macro/TextScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/TextFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/TextTreeMacroLibrary.ftl"/>
+        </template>
+        <template name="screencsv" type="csv" content-type="UTF-8" encoding="none" encoder="xml">
+            <template-file widget="screen" location="component://common-theme/template/macro/CsvScreenMacroLibrary.ftl"/>
+            <template-file widget="form" location="component://common-theme/template/macro/CsvFormMacroLibrary.ftl"/>
+            <template-file widget="tree" location="component://common-theme/template/macro/CsvTreeMacroLibrary.ftl"/>
+        </template>
+    </templates>
+
+</theme>

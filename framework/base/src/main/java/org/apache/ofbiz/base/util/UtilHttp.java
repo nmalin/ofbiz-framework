@@ -56,6 +56,8 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.ofbiz.widget.model.ThemeFactory;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternMatcher;
@@ -78,6 +80,7 @@ public final class UtilHttp {
     private static final int COMPOSITE_DELIMITER_LENGTH = COMPOSITE_DELIMITER.length();
 
     private static final String SESSION_KEY_TIMEZONE = "timeZone";
+    private static final String SESSION_KEY_THEME = "theme";
 
     private UtilHttp () {}
 
@@ -723,6 +726,31 @@ public final class UtilHttp {
         }
 
         return timeZone;
+    }
+
+    /** Resvole the theme object from the request
+     * 
+     * @param request
+     * @return
+     */
+    public static Theme getTheme(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Theme theme = (Theme) session.getAttribute(SESSION_KEY_THEME);
+        if (theme == null) {
+            theme = (Theme) request.getAttribute(SESSION_KEY_THEME);
+        }
+        if (theme == null) {
+            theme = ThemeFactory.resolveTheme(request);
+        }
+        session.setAttribute(SESSION_KEY_THEME, theme);
+        return theme;
+    }
+    public static void setTheme(HttpServletRequest request, Theme theme) {
+        request.setAttribute(SESSION_KEY_THEME, theme);
+        setTheme(request.getSession(), theme);
+    }
+    public static void setTheme(HttpSession session, Theme theme) {
+        session.setAttribute(SESSION_KEY_THEME, theme);
     }
 
     /**

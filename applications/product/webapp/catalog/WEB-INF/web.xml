@@ -38,6 +38,11 @@ under the License.
         <param-name>mainDecoratorLocation</param-name>
         <param-value>component://product/widget/catalog/CommonScreens.xml</param-value>
     </context-param>
+    <context-param>
+        <description>The defautl visualTheme use for this webapp.</description>
+        <param-name>visualThemeId</param-name>
+        <param-value>RAINBOWSTONE_AMBER</param-value>
+    </context-param>
 
     <filter>
         <display-name>ControlFilter</display-name>

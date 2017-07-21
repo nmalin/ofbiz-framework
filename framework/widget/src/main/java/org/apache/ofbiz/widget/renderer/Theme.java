@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -15,15 +15,29 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *******************************************************************************/
+package org.apache.ofbiz.widget.renderer;
 
-if (!globalContext.themeResources) {
-    Map themeResourcesResult = run service: 'getVisualThemeResources', with: ['visualThemeId': theme.getVisualThemeId()]
-    globalContext.themeResources = themeResourcesResult.themeResources
-    if (globalContext.layoutSettings) {
-        globalContext.layoutSettings.putAll(themeResourcesResult.themeResources)
-    } else {
-        globalContext.layoutSettings = themeResourcesResult.themeResources
+import org.apache.ofbiz.widget.model.ModelTheme;
+
+public final class Theme {
+
+    public static final String module = Theme.class.getName();
+    private ModelTheme modelTheme;
+    private String visualThemeId;
+
+    public Theme(ModelTheme modelTheme, String visualThemeId) {
+        this.modelTheme = modelTheme;
+        this.visualThemeId = visualThemeId;
+
     }
+
+    public String getVisualThemeId() {
+        return visualThemeId;
+    }
+
+    public ModelTheme getModelTheme() {
+        return modelTheme;
+    }
+
 }
-context.globalContext = globalContext

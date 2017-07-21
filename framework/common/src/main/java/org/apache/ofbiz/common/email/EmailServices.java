@@ -72,6 +72,7 @@ import org.apache.ofbiz.service.LocalDispatcher;
 import org.apache.ofbiz.service.ServiceUtil;
 import org.apache.ofbiz.service.mail.MimeMessageWrapper;
 import org.apache.ofbiz.webapp.view.ApacheFopWorker;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.apache.ofbiz.widget.renderer.macro.MacroScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
@@ -425,6 +426,7 @@ public class EmailServices {
         LocalDispatcher dispatcher = dctx.getDispatcher();
         String webSiteId = (String) serviceContext.remove("webSiteId");
         String bodyText = (String) serviceContext.remove("bodyText");
+        Theme theme = (Theme) serviceContext.remove("theme");
         String bodyScreenUri = (String) serviceContext.remove("bodyScreenUri");
         String xslfoAttachScreenLocationParam = (String) serviceContext.remove("xslfoAttachScreenLocation");
         String attachmentNameParam = (String) serviceContext.remove("attachmentName");
@@ -466,8 +468,7 @@ public class EmailServices {
 
         ScreenStringRenderer screenStringRenderer = null;
         try {
-            screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", dctx.getDelegator()),
-                    EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", dctx.getDelegator()));
+            screenStringRenderer = new MacroScreenRenderer(theme.getModelTheme().getType("screen"), theme.getModelTheme().getScreenRendererLocation("screen"));
         } catch (TemplateException e) {
             Debug.logError(e, "Error rendering screen for email: " + e.toString(), module);
             return ServiceUtil.returnError(UtilProperties.getMessage(resource, "CommonEmailSendRenderingScreenEmailError", UtilMisc.toMap("errorString", e.toString()), locale));
@@ -521,8 +522,8 @@ public class EmailServices {
                     Writer writer = new StringWriter();
                     MapStack<String> screenContextAtt = MapStack.create();
                     // substitute the freemarker variables...
-                    ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", "screenfop.name", dctx.getDelegator()),
-                            EntityUtilProperties.getPropertyValue("widget", "screenfop.screenrenderer", dctx.getDelegator()));
+                    ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(theme.getModelTheme().getType("screenfop"),
+                            theme.getModelTheme().getScreenRendererLocation("screenfop"));
                     ScreenRenderer screensAtt = new ScreenRenderer(writer, screenContext, foScreenStringRenderer);
                     screensAtt.populateContextForService(dctx, bodyParameters);
                     screenContextAtt.putAll(bodyParameters);

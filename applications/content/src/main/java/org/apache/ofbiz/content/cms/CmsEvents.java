@@ -49,6 +49,7 @@ import org.apache.ofbiz.webapp.control.RequestHandler;
 import org.apache.ofbiz.webapp.website.WebSiteWorker;
 import org.apache.ofbiz.widget.renderer.FormStringRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.apache.ofbiz.widget.renderer.macro.MacroFormRenderer;
 
 import freemarker.template.TemplateException;
@@ -66,6 +67,7 @@ public class CmsEvents {
         LocalDispatcher dispatcher = (LocalDispatcher) request.getAttribute("dispatcher");
         ServletContext servletContext = request.getSession().getServletContext();
         HttpSession session = request.getSession();
+        Theme theme = UtilHttp.getTheme(request);
         Writer writer = null;
         Locale locale = UtilHttp.getLocale(request);
 
@@ -288,7 +290,7 @@ public class CmsEvents {
                 try {
                     writer = response.getWriter();
                     // TODO: replace "screen" to support dynamic rendering of different output
-                    FormStringRenderer formStringRenderer = new MacroFormRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.formrenderer", delegator), request, response);
+                    FormStringRenderer formStringRenderer = new MacroFormRenderer(theme.getModelTheme().getFormRendererLocation("screen"), request, response);
                     templateMap.put("formStringRenderer", formStringRenderer);
 
                     // if use web analytics

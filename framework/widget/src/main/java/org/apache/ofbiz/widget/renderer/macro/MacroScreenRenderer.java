@@ -57,12 +57,14 @@ import org.apache.ofbiz.widget.model.ModelScreen;
 import org.apache.ofbiz.widget.model.ModelScreenWidget;
 import org.apache.ofbiz.widget.model.ModelScreenWidget.Column;
 import org.apache.ofbiz.widget.model.ModelScreenWidget.ColumnContainer;
+import org.apache.ofbiz.widget.model.ModelTheme;
 import org.apache.ofbiz.widget.model.ModelWidget;
 import org.apache.ofbiz.widget.model.ScreenFactory;
 import org.apache.ofbiz.widget.renderer.FormStringRenderer;
 import org.apache.ofbiz.widget.renderer.MenuStringRenderer;
 import org.apache.ofbiz.widget.renderer.Paginator;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.xml.sax.SAXException;
 
 import freemarker.core.Environment;
@@ -77,7 +79,6 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
     private String rendererName;
     private int elementId = 999;
     protected boolean widgetCommentsEnabled = false;
-    private static final String formrenderer = UtilProperties.getPropertyValue("commonWidget", "screen.formrenderer");
     private int screenLetsIdCounter = 1;
 
     public MacroScreenRenderer(String name, String macroLibraryPath) throws TemplateException, IOException {
@@ -584,6 +585,8 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
     public void renderScreenletBegin(Appendable writer, Map<String, Object> context, boolean collapsed, ModelScreenWidget.Screenlet screenlet) throws IOException {
         HttpServletRequest request = (HttpServletRequest) context.get("request");
         HttpServletResponse response = (HttpServletResponse) context.get("response");
+        Theme theme = UtilHttp.getTheme(request);
+        ModelTheme modelTheme = theme.getModelTheme();
         boolean javaScriptEnabled = UtilHttp.isJavaScriptEnabled(request);
         ModelScreenWidget.Menu tabMenu = screenlet.getTabMenu();
         if (tabMenu != null) {
@@ -621,8 +624,7 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
                 MenuStringRenderer savedRenderer = (MenuStringRenderer) context.get("menuStringRenderer");
                 MenuStringRenderer renderer;
                 try {
-                    renderer = new MacroMenuRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.menurenderer", (Delegator) request.getAttribute("delegator")),
-                            request, response);
+                    renderer = new MacroMenuRenderer(modelTheme.getMenuRendererLocation("screen"), request, response);
                     context.put("menuStringRenderer", renderer);
                     navMenu.renderWidgetString(sb, context, this);
                     context.put("menuStringRenderer", savedRenderer);
@@ -662,13 +664,15 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
         if (subWidget.equals(screenlet.getNavigationForm())) {
             HttpServletRequest request = (HttpServletRequest) context.get("request");
             HttpServletResponse response = (HttpServletResponse) context.get("response");
+            Theme theme = UtilHttp.getTheme(request);
+            ModelTheme modelTheme = theme.getModelTheme();
             if (request != null && response != null) {
                 Map<String, Object> globalCtx = UtilGenerics.checkMap(context.get("globalContext"));
                 globalCtx.put("NO_PAGINATOR", true);
                 FormStringRenderer savedRenderer = (FormStringRenderer) context.get("formStringRenderer");
                 MacroFormRenderer renderer = null;
                 try {
-                    renderer = new MacroFormRenderer(formrenderer, request, response);
+                    renderer = new MacroFormRenderer(modelTheme.getFormRendererLocation("screen"), request, response);
                 } catch (TemplateException e) {
                     Debug.logError("Not rendering content, error on MacroFormRenderer creation.", module);
                 }

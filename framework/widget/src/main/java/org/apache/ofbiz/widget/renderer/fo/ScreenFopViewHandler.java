@@ -37,6 +37,7 @@ import org.apache.fop.pdf.PDFEncryptionParams;
 import org.apache.fop.render.pdf.PDFEncryptionOption;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilCodec;
+import org.apache.ofbiz.base.util.UtilHttp;
 import org.apache.ofbiz.base.util.UtilProperties;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.Delegator;
@@ -44,9 +45,11 @@ import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.webapp.view.AbstractViewHandler;
 import org.apache.ofbiz.webapp.view.ApacheFopWorker;
 import org.apache.ofbiz.webapp.view.ViewHandlerException;
+import org.apache.ofbiz.widget.model.ModelTheme;
 import org.apache.ofbiz.widget.renderer.FormStringRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.apache.ofbiz.widget.renderer.macro.MacroFormRenderer;
 import org.apache.ofbiz.widget.renderer.macro.MacroScreenRenderer;
 
@@ -75,20 +78,23 @@ public class ScreenFopViewHandler extends AbstractViewHandler {
     public void render(String name, String page, String info, String contentType, String encoding, HttpServletRequest request, HttpServletResponse response) throws ViewHandlerException {
 
         Delegator delegator = (Delegator) request.getAttribute("delegator");
+        Theme theme = UtilHttp.getTheme(request);
+        ModelTheme modelTheme = theme.getModelTheme();
+
         // render and obtain the XSL-FO
         Writer writer = new StringWriter();
         try {
-            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("widget", getName() + ".name", delegator), EntityUtilProperties.getPropertyValue("widget", getName() + ".screenrenderer", delegator));
-            FormStringRenderer formStringRenderer = new MacroFormRenderer(EntityUtilProperties.getPropertyValue("widget", getName() + ".formrenderer", delegator), request, response);
+            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(modelTheme.getType(getName()), modelTheme.getScreenRendererLocation(getName()));
+            FormStringRenderer formStringRenderer = new MacroFormRenderer(modelTheme.getFormRendererLocation(getName()), request, response);
             // TODO: uncomment these lines when the renderers are implemented
-            //TreeStringRenderer treeStringRenderer = new MacroTreeRenderer(UtilProperties.getPropertyValue("widget", getName() + ".treerenderer"), writer);
-            //MenuStringRenderer menuStringRenderer = new MacroMenuRenderer(UtilProperties.getPropertyValue("widget", getName() + ".menurenderer"), writer);
+            //TreeStringRenderer treeStringRenderer = new MacroTreeRenderer(modelTheme.getTreeRendererLocation(getName()), writer);
+            //MenuStringRenderer menuStringRenderer = new MacroMenuRenderer(modelTheme.getMenuRendererLocation(getName()), writer);
             ScreenRenderer screens = new ScreenRenderer(writer, null, screenStringRenderer);
             screens.populateContextForRequest(request, response, servletContext);
 
             // this is the object used to render forms from their definitions
             screens.getContext().put("formStringRenderer", formStringRenderer);
-            screens.getContext().put("simpleEncoder", UtilCodec.getEncoder(EntityUtilProperties.getPropertyValue("widget", getName() + ".encoder", delegator)));
+            screens.getContext().put("simpleEncoder", UtilCodec.getEncoder(modelTheme.getEncoder(getName())));
             screens.render(page);
         } catch (Exception e) {
             renderError("Problems with the response writer/output stream", e, "[Not Yet Rendered]", request, response);
@@ -180,8 +186,10 @@ public class ScreenFopViewHandler extends AbstractViewHandler {
         try {
             Delegator delegator = (Delegator) request.getAttribute("delegator");
             Writer writer = new StringWriter();
-            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(EntityUtilProperties.getPropertyValue("commonWidget", "screen.name", delegator),
-                    EntityUtilProperties.getPropertyValue("commonWidget", "screen.screenrenderer", delegator));
+            Theme theme = UtilHttp.getTheme(request);
+            ModelTheme modelTheme = theme.getModelTheme();
+            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(modelTheme.getType("screen"),
+                    modelTheme.getScreenRendererLocation("screen"));
 
             ScreenRenderer screens = new ScreenRenderer(writer, null, screenStringRenderer);
             screens.populateContextForRequest(request, response, servletContext);
