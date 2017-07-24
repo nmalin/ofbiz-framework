@@ -224,7 +224,8 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
     public void renderLink(Appendable writer, Map<String, Object> context, ModelScreenWidget.ScreenLink link) throws IOException {
         HttpServletResponse response = (HttpServletResponse) context.get("response");
         HttpServletRequest request = (HttpServletRequest) context.get("request");
-
+        Theme theme = UtilHttp.getTheme(request);
+        ModelTheme modelTheme = theme.getModelTheme();
         String targetWindow = link.getTargetWindow(context);
         String target = link.getTarget(context);
 
@@ -236,11 +237,11 @@ public class MacroScreenRenderer implements ScreenStringRenderer {
         StringBuilder parameters = new StringBuilder();
         String width = link.getWidth();
         if (UtilValidate.isEmpty(width)) {
-            width = String.valueOf(UtilProperties.getPropertyValue("widget", "widget.link.default.layered-modal.width", "800"));
+            width = String.valueOf(modelTheme.getLinkDefaultLayeredModalWidth());
         }
         String height = link.getHeight();
         if (UtilValidate.isEmpty(height)) {
-            height = String.valueOf(UtilProperties.getPropertyValue("widget", "widget.link.default.layered-modal.height", "600"));
+            height = String.valueOf(modelTheme.getLinkDefaultLayeredModalHeight());
         }
         if ("hidden-form".equals(linkType) || "layered-modal".equals(linkType)) {
             StringBuilder sb = new StringBuilder();

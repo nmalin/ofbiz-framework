@@ -85,10 +85,12 @@ import org.apache.ofbiz.widget.model.ModelFormField.TextareaField;
 import org.apache.ofbiz.widget.model.ModelFormFieldBuilder;
 import org.apache.ofbiz.widget.model.ModelScreenWidget;
 import org.apache.ofbiz.widget.model.ModelSingleForm;
+import org.apache.ofbiz.widget.model.ModelTheme;
 import org.apache.ofbiz.widget.model.ModelWidget;
 import org.apache.ofbiz.widget.renderer.FormRenderer;
 import org.apache.ofbiz.widget.renderer.FormStringRenderer;
 import org.apache.ofbiz.widget.renderer.Paginator;
+import org.apache.ofbiz.widget.renderer.Theme;
 import org.apache.ofbiz.widget.renderer.UtilHelpText;
 
 import com.ibm.icu.util.Calendar;
@@ -3067,6 +3069,8 @@ public final class MacroFormRenderer implements FormStringRenderer {
         // get the parameterized pagination index and size fields
         int paginatorNumber = WidgetWorker.getPaginatorNumber(context);
         ModelForm modelForm = modelFormField.getModelForm();
+        Theme theme = UtilHttp.getTheme(request);
+        ModelTheme modelTheme = theme.getModelTheme();
         String viewIndexField = modelForm.getMultiPaginateIndexField(context);
         String viewSizeField = modelForm.getMultiPaginateSizeField(context);
         int viewIndex = Paginator.getViewIndex(modelForm, context);
@@ -3099,12 +3103,12 @@ public final class MacroFormRenderer implements FormStringRenderer {
                 String uniqueItemName = "Modal_".concat(UUID.randomUUID().toString().replace("-", "_"));
                 String width = (String) this.request.getAttribute("width");
                 if (UtilValidate.isEmpty(width)) {
-                    width = String.valueOf(UtilProperties.getPropertyValue("widget", "widget.link.default.layered-modal.width", "800"));
+                    width = String.valueOf(modelTheme.getLinkDefaultLayeredModalWidth());
                     this.request.setAttribute("width", width);
                 }
                 String height = (String) this.request.getAttribute("height");
                 if (UtilValidate.isEmpty(height)) {
-                    height = String.valueOf(UtilProperties.getPropertyValue("widget", "widget.link.default.layered-modal.height", "600"));
+                    height = String.valueOf(modelTheme.getLinkDefaultLayeredModalHeight());
                     this.request.setAttribute("height", height);
                 }
                 this.request.setAttribute("uniqueItemName", uniqueItemName);

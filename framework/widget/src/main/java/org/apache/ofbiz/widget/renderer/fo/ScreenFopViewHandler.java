@@ -109,7 +109,7 @@ public class ScreenFopViewHandler extends AbstractViewHandler {
         if (Debug.verboseOn()) Debug.logVerbose("XSL:FO Screen Output: " + screenOutString, module);
 
         if (UtilValidate.isEmpty(contentType)) {
-            contentType = UtilProperties.getPropertyValue("widget", getName() + ".default.contenttype");
+            contentType = modelTheme.getContentType(getName());
         }
         
         // get encryption related parameters
