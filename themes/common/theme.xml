@@ -21,30 +21,33 @@ under the License.
 <theme name="common"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
-    <visual-themes>
+    <visual-themes><!--List of visual theme contains to this theme components-->
         <visual-theme id="COMMON"/>
     </visual-themes>
-    <default-view-size value="20"/>
-    <autocompleter
-            default-view-size="10"
-            default-min-lenght="2"
-            default-delay="300"
-            display-return-field="true"/>
-    <lookup
-            position="topleft"
-            width="640"
-            height="500"/>
-    <layered-modal
-            width="800"
-            height="600"/>
-    <properties>
+    <widget-properties><!--Transversal properties relative to ofbiz widget component-->
+        <default-view-size value="20"/>
+        <autocompleter
+                default-view-size="10"
+                default-min-lenght="2"
+                default-delay="300"
+                display-return-field="true"/>
+        <lookup
+                position="topleft"
+                width="640"
+                height="500"/>
+        <layered-modal
+                width="800"
+                height="600"/>
+    </widget-properties>
+
+    <theme-properties> <!--specific properties dedicate to this theme -->
         <property name="jgrowl.position" value="center" type="String"/><!--possible value: top-left, top-right, bottom-left, bottom-right, center-->
         <property name="jgrowl.width" value="800" type="Integer"/>
         <property name="jgrowl.height" value="" type="Integer"/>
         <property name="jgrowl.speed" value="100" type="Integer"/>
-    </properties>
+    </theme-properties>
 
-    <templates>
+    <templates><!-- Freemarker template use by this theme to render widget model-->
         <template name="screen" type="html" content-type="UTF-8" encoding="none" encoder="html" compress="false">
             <template-file widget="screen" location="component://common-theme/template/macro/HtmlScreenMacroLibrary.ftl"/>
             <template-file widget="form" location="component://common-theme/template/macro/HtmlFormMacroLibrary.ftl"/>
@@ -78,4 +81,21 @@ under the License.
         </template>
     </templates>
 
+    <common-screens><!--list all common screen and decorator global to each application that each theme can be surcharge or not and use the screen present on common theme-->
+        <structural-decorator default-location="component://common-theme/widget/CommonScreens.xml">
+            <decorator name="GlobalDecorator"/>
+            <decorator name="LookupDecorator"/>
+            <decorator name="SimpleDecorator"/>
+        </structural-decorator>
+        <embed-decorator default-location="component://common-theme/widget/CommonEmbedScreens.xml">
+            <decorator name="FindScreenDecorator"/>
+            <decorator name="EditScreenDecorator"/>
+            <decorator name="ListAndEditScreenDecorator"/>
+        </embed-decorator>
+        <general-screen default-location="component://common-theme/widget/CommonDedicateScreens.xml">
+            <screen name="geoChart"/>
+            <screen name="EventMessages"/>
+            <screen name="countries"/>
+        </general-screen>
+    </common-screens>
 </theme>

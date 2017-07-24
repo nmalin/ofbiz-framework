@@ -27,5 +27,5 @@ under the License.
         <visual-theme id="RAINBOWSTONE_RUBY"/>
         <visual-theme id="RAINBOWSTONE_EMERALD"/>
     </visual-themes>
-    <extend location="component://common-theme/theme.xml"/>
+    <extends location="component://common-theme/theme.xml"/>
 </theme>

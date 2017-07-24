@@ -18,14 +18,27 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<theme name="flatgrey"
+<theme name="mytheme"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="FLAT_GREY"/>
+        <visual-theme id="MYTHEME"/>
     </visual-themes>
-    <extend location="component://common-theme/theme.xml"/>
-    <properties>
-        <property name="jgrowl.position" value="top-left" type="String"/><!--possible value: top-left, top-right, bottom-left, bottom-right, center-->
-    </properties>
+    <extends location="component://common-theme/theme.xml"/>
+    <theme-properties>
+        <property name="jgrowl.position" value="top-left" type="String"/>
+    </theme-properties>
+    <templates>
+        <template name="screen" type="html" content-type="UTF-8" encoding="none" encoder="html" compress="false">
+            <template-file widget="form" location="component://mytheme/template/macro/HtmlFormMacroLibrary.ftl"/>
+        </template>
+    </templates>
+    <common-screens>
+        <structural-decorator>
+            <decorator name="SimpleDecorator" location="component://mytheme/widget/MyDecoratorScreens.xml"/>
+        </structural-decorator>
+        <general-screen >
+            <screen name="EventMessages" location="component://mytheme/widget/MyTemplateScreens.xml"/>
+        </general-screen>
+    </common-screens>
 </theme>

@@ -44,55 +44,61 @@ under the License.
             <xs:attribute type="xs:string" name="id" use="required" />
         </xs:complexType>
     </xs:element>
-    <xs:element name="extend">
+    <xs:element name="extends">
         <xs:complexType>
             <xs:attribute type="xs:string" name="location" use="required" />
         </xs:complexType>
     </xs:element>
-    <xs:element name="default-view-size">
+    <xs:element name="widget-properties">
         <xs:complexType>
-            <xs:attribute type="xs:integer" name="value" />
+            <xs:sequence>
+                <xs:element name="default-view-size">
+                    <xs:complexType>
+                        <xs:attribute type="xs:integer" name="value" />
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="autocompleter">
+                    <xs:complexType>
+                        <xs:attribute type="xs:integer" name="default-view-size" />
+                        <xs:attribute type="xs:integer" name="default-min-lenght" />
+                        <xs:attribute type="xs:integer" name="default-delay" />
+                        <xs:attribute name="display-return-field">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:enumeration value="true" />
+                                    <xs:enumeration value="false" />
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="lookup">
+                    <xs:complexType>
+                        <xs:attribute type="xs:integer" name="height" />
+                        <xs:attribute type="xs:integer" name="width" />
+                        <xs:attribute name="position">
+                            <xs:simpleType>
+                                <xs:restriction base="xs:token">
+                                    <xs:enumeration value="top-left"/>
+                                    <xs:enumeration value="top-right"/>
+                                    <xs:enumeration value="bottom-left"/>
+                                    <xs:enumeration value="bottom-right"/>
+                                    <xs:enumeration value="center"/>
+                                </xs:restriction>
+                            </xs:simpleType>
+                        </xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="layered-modal">
+                    <xs:complexType>
+                        <xs:attribute type="xs:integer" name="height" />
+                        <xs:attribute type="xs:integer" name="width" />
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
-    <xs:element name="autocompleter">
-        <xs:complexType>
-            <xs:attribute type="xs:integer" name="default-view-size" />
-            <xs:attribute type="xs:integer" name="default-min-lenght" />
-            <xs:attribute type="xs:integer" name="default-delay" />
-            <xs:attribute name="display-return-field">
-                <xs:simpleType>
-                    <xs:restriction base="xs:token">
-                        <xs:enumeration value="true" />
-                        <xs:enumeration value="false" />
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:attribute>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="lookup">
-        <xs:complexType>
-            <xs:attribute type="xs:integer" name="height" />
-            <xs:attribute type="xs:integer" name="width" />
-            <xs:attribute name="position">
-                <xs:simpleType>
-                    <xs:restriction base="xs:token">
-                        <xs:enumeration value="top-left"/>
-                        <xs:enumeration value="top-right"/>
-                        <xs:enumeration value="bottom-left"/>
-                        <xs:enumeration value="bottom-right"/>
-                        <xs:enumeration value="center"/>
-                    </xs:restriction>
-                </xs:simpleType>
-            </xs:attribute>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="layered-modal">
-        <xs:complexType>
-            <xs:attribute type="xs:integer" name="height" />
-            <xs:attribute type="xs:integer" name="width" />
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="properties">
+    <xs:element name="theme-properties">
         <xs:complexType>
             <xs:sequence>
                 <xs:element minOccurs="1" maxOccurs="unbounded" ref="property" />

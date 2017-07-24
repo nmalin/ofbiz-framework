@@ -77,7 +77,7 @@ public class ModelTheme {
     private Integer linkDefaultLayeredModalHeight = null;
 
     //dedicate theme properties
-    private Map<String, Object> dedicateProperties;
+    private Map<String, Object> themeProperties;
 
     //template rendering
     private Map<String, ModelTemplate> modelTemplateMap;
@@ -87,23 +87,8 @@ public class ModelTheme {
         this.name = themeElement.getAttribute("name");
         for (Element childElement : UtilXml.childElementList(themeElement)) {
             switch (childElement.getNodeName()) {
-                case "default-view-size":
-                    this.defaultViewSize = Integer.valueOf(childElement.getAttribute("value"));
-                    break;
-                case "autocompleter":
-                    this.autocompleterDefaultDelay = Integer.valueOf(childElement.getAttribute("default-delay"));
-                    this.autocompleterDefaultMinLength = Integer.valueOf(childElement.getAttribute("default-min-lenght"));
-                    this.autocompleterDefaultViewSize = Integer.valueOf(childElement.getAttribute("default-view-size"));
-                    this.autocompleterDisplayReturnField = "true".equalsIgnoreCase(childElement.getAttribute("display-return-field"));
-                    break;
-                case "lookup":
-                    this.lookupPosition = childElement.getAttribute("position");
-                    this.lookupHeight = Integer.valueOf(childElement.getAttribute("height"));
-                    this.lookupWidth = Integer.valueOf(childElement.getAttribute("width"));
-                    break;
-                case "layered-modal":
-                    this.linkDefaultLayeredModalHeight = Integer.valueOf(childElement.getAttribute("height"));
-                    this.linkDefaultLayeredModalWidth = Integer.valueOf(childElement.getAttribute("width"));
+                case "widget-properties":
+                    addWidgetProperties(childElement);
                     break;
                 case "visual-themes":
                     List<String> visualThemeIds = new LinkedList<>();
@@ -111,9 +96,9 @@ public class ModelTheme {
                         visualThemeIds.add(visualTheme.getAttribute("id"));
                     }
                     this.visualThemeIds = Collections.unmodifiableList(visualThemeIds);
-                case "properties":
+                case "theme-properties":
                     for (Element property : UtilXml.childElementList(childElement)) {
-                        addDedicateProperty(property);
+                        addThemeProperty(property);
                     }
                     break;
                 case "templates":
@@ -121,7 +106,7 @@ public class ModelTheme {
                         addTemplate(template);
                     }
                     break;
-                case "extend":
+                case "extends":
                     try {
                         this.originTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
                     } catch (IOException | ParserConfigurationException | SAXException e) {
@@ -133,7 +118,7 @@ public class ModelTheme {
         if (this.originTheme != null) {
             extendFromOrigin();
         }
-        if (dedicateProperties != null) dedicateProperties = Collections.unmodifiableMap(dedicateProperties);
+        if (themeProperties != null) themeProperties = Collections.unmodifiableMap(themeProperties);
         if (modelTemplateMap != null) modelTemplateMap = Collections.unmodifiableMap(modelTemplateMap);
     }
 
@@ -156,15 +141,19 @@ public class ModelTheme {
     public Integer getAutocompleterDefaultViewSize() {
         return autocompleterDefaultViewSize;
     }
-
     public Integer getAutocompleterDefaultMinLength() {
         return autocompleterDefaultMinLength;
+    }
+    public Boolean getAutocompleterDisplayReturnField() {
+        return autocompleterDisplayReturnField;
+    }
+    public Integer getAutocompleterDefaultDelay() {
+        return autocompleterDefaultDelay;
     }
 
     public Integer getLinkDefaultLayeredModalHeight() {
         return linkDefaultLayeredModalHeight;
     }
-
     public Integer getLinkDefaultLayeredModalWidth() {
         return linkDefaultLayeredModalWidth;
     }
@@ -181,13 +170,6 @@ public class ModelTheme {
         return lookupPosition;
     }
 
-    public Boolean getAutocompleterDisplayReturnField() {
-        return autocompleterDisplayReturnField;
-    }
-
-    public Integer getAutocompleterDefaultDelay() {
-        return autocompleterDefaultDelay;
-    }
 
     /**
      * */
@@ -204,10 +186,10 @@ public class ModelTheme {
         if (this.linkDefaultLayeredModalHeight == null) this.linkDefaultLayeredModalHeight = originTheme.linkDefaultLayeredModalHeight;
 
         // resolve all decicate properties from origin and sucharge by the present dedicate properties
-        if (UtilValidate.isNotEmpty(originTheme.dedicateProperties)) {
-            Map<String, Object> dedicatePropertiesTmp = new HashMap<>(originTheme.dedicateProperties);
-            if (this.dedicateProperties != null) dedicatePropertiesTmp.putAll(this.dedicateProperties);
-            this.dedicateProperties = dedicatePropertiesTmp;
+        if (UtilValidate.isNotEmpty(originTheme.themeProperties)) {
+            Map<String, Object> themePropertiesTmp = new HashMap<>(originTheme.themeProperties);
+            if (this.themeProperties != null) themePropertiesTmp.putAll(this.themeProperties);
+            this.themeProperties = themePropertiesTmp;
         }
 
         // Add modelTemplate present on origin and not on this
@@ -216,6 +198,7 @@ public class ModelTheme {
                 for (String modelTemplateName : originTheme.modelTemplateMap.keySet()) {
                     if (! this.modelTemplateMap.containsKey(modelTemplateName)) {
                         this.modelTemplateMap.put(modelTemplateName, originTheme.modelTemplateMap.get(modelTemplateName));
+                        //TODO faire une analyse plus fine de la diff entre les templates
                     }
                 }
             } else {
@@ -224,25 +207,50 @@ public class ModelTheme {
         }
     }
 
-    private void addDedicateProperty(Element property) {
-        if (dedicateProperties == null) dedicateProperties = new LinkedHashMap<>();
+    private void addWidgetProperties(Element widgetProperties) {
+        for (Element childElement : UtilXml.childElementList(widgetProperties)) {
+            switch (childElement.getNodeName()) {
+                case "default-view-size":
+                    this.defaultViewSize = Integer.valueOf(childElement.getAttribute("value"));
+                    break;
+                case "autocompleter":
+                    this.autocompleterDefaultDelay = Integer.valueOf(childElement.getAttribute("default-delay"));
+                    this.autocompleterDefaultMinLength = Integer.valueOf(childElement.getAttribute("default-min-lenght"));
+                    this.autocompleterDefaultViewSize = Integer.valueOf(childElement.getAttribute("default-view-size"));
+                    this.autocompleterDisplayReturnField = "true".equalsIgnoreCase(childElement.getAttribute("display-return-field"));
+                    break;
+                case "lookup":
+                    this.lookupPosition = childElement.getAttribute("position");
+                    this.lookupHeight = Integer.valueOf(childElement.getAttribute("height"));
+                    this.lookupWidth = Integer.valueOf(childElement.getAttribute("width"));
+                    break;
+                case "layered-modal":
+                    this.linkDefaultLayeredModalHeight = Integer.valueOf(childElement.getAttribute("height"));
+                    this.linkDefaultLayeredModalWidth = Integer.valueOf(childElement.getAttribute("width"));
+                    break;
+            }
+        }
+    }
+
+    private void addThemeProperty(Element property) {
+        if (themeProperties == null) themeProperties = new LinkedHashMap<>();
         String name = property.getAttribute("name");
         String value = property.getAttribute(("value"));
         String type = property.getAttribute("type");
         if (type == null || "String".equals(type) || "java.lang.String".equals(type)) {
-            dedicateProperties.put(name, value);
+            themeProperties.put(name, value);
         } else {
             try {
-                dedicateProperties.put(name, ObjectType.simpleTypeConvert(value, type, null, null));
+                themeProperties.put(name, ObjectType.simpleTypeConvert(value, type, null, null));
             } catch (GeneralException e) {
                 Debug.logError("Impossible to parse the value " + value + " to type " + type + " for the property " + name + " on theme " + this.name, module);
             }
         }
     }
     public Object getProperty(String propertyName) {
-        if (! dedicateProperties.containsKey(propertyName)
-                || dedicateProperties.get(propertyName) == null) return "";
-        return dedicateProperties.get(propertyName);
+        if (! themeProperties.containsKey(propertyName)
+                || themeProperties.get(propertyName) == null) return "";
+        return themeProperties.get(propertyName);
     }
 
     private void addTemplate(Element template) {
