@@ -45,11 +45,13 @@ import org.apache.ofbiz.widget.model.ModelMenu;
 import org.apache.ofbiz.widget.model.ModelMenuItem;
 import org.apache.ofbiz.widget.model.ModelMenuItem.MenuLink;
 import org.apache.ofbiz.widget.model.ModelWidget;
+import org.apache.ofbiz.widget.model.ThemeFactory;
 import org.apache.ofbiz.widget.renderer.MenuStringRenderer;
 
 import freemarker.core.Environment;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.ofbiz.widget.renderer.Theme;
 
 public class MacroMenuRenderer implements MenuStringRenderer {
 
@@ -59,11 +61,13 @@ public class MacroMenuRenderer implements MenuStringRenderer {
     private final Template macroLibrary;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
+    private final Theme theme;
 
     public MacroMenuRenderer(String macroLibraryPath, HttpServletRequest request, HttpServletResponse response) throws TemplateException, IOException {
         this.macroLibrary = FreeMarkerWorker.getTemplate(macroLibraryPath);
         this.request = request;
         this.response = response;
+        this.theme = ThemeFactory.resolveTheme(request);
     }
 
     // Made this a separate method so it can be externalized and reused.
@@ -97,6 +101,7 @@ public class MacroMenuRenderer implements MenuStringRenderer {
 
     private void executeMacro(Appendable writer, String macro) throws IOException, TemplateException {
         Environment environment = getEnvironment(writer);
+        environment.setVariable("theme", FreeMarkerWorker.autoWrap(theme, environment));
         Reader templateReader = new StringReader(macro);
         macroCount++;
         String templateName = toString().concat("_") + macroCount;
