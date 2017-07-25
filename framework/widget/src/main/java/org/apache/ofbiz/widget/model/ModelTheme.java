@@ -196,9 +196,12 @@ public class ModelTheme {
         if (UtilValidate.isNotEmpty(originTheme.modelTemplateMap)) {
             if (UtilValidate.isNotEmpty(this.modelTemplateMap)) {
                 for (String modelTemplateName : originTheme.modelTemplateMap.keySet()) {
-                    if (! this.modelTemplateMap.containsKey(modelTemplateName)) {
-                        this.modelTemplateMap.put(modelTemplateName, originTheme.modelTemplateMap.get(modelTemplateName));
-                        //TODO faire une analyse plus fine de la diff entre les templates
+                    ModelTemplate originModelTemplate = originTheme.modelTemplateMap.get(modelTemplateName);
+                    ModelTemplate modelTemplate = this.modelTemplateMap.get(modelTemplateName);
+                    if (modelTemplate == null) {
+                        this.modelTemplateMap.put(modelTemplateName, originModelTemplate);
+                    } else {
+                        modelTemplate.extendsFromOrigin(originModelTemplate);
                     }
                 }
             } else {
@@ -371,6 +374,17 @@ public class ModelTheme {
         }
         public String getMenuRendererLocation() {
             return menuRendererLocation;
+        }
+
+        public void extendsFromOrigin(ModelTemplate originModelTemplate) {
+            if (this.compress == null) this.compress = originModelTemplate.compress;
+            if (this.encoder == null) this.encoder = originModelTemplate.encoder;
+            if (this.contentType == null) this.contentType = originModelTemplate.contentType;
+            if (this.encoding == null) this.encoding = originModelTemplate.encoding;
+            if (this.screenRendererLocation == null) this.screenRendererLocation = originModelTemplate.screenRendererLocation;
+            if (this.formRendererLocation == null) this.formRendererLocation = originModelTemplate.formRendererLocation;
+            if (this.treeRendererLocation == null) this.treeRendererLocation = originModelTemplate.treeRendererLocation;
+            if (this.menuRendererLocation == null) this.menuRendererLocation = originModelTemplate.menuRendererLocation;
         }
     }
 }
