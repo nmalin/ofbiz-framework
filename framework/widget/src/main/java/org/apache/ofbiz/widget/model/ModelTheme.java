@@ -19,30 +19,25 @@
 package org.apache.ofbiz.widget.model;
 
 import java.io.IOException;
-import java.text.ParseException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.ObjectType;
-import org.apache.ofbiz.base.util.UtilMisc;
-import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 /**
  * Widget Theme Library - Widget model class.
  */
 @SuppressWarnings("serial")
-public class ModelTheme {
+public class ModelTheme implements Serializable {
 
     public static final String module = ModelTheme.class.getName();
     /**
@@ -51,75 +46,122 @@ public class ModelTheme {
      */
     public static final String enableBoundaryCommentsParam = "widgetVerbose";
 
-    private ModelTheme originTheme = null;
+    private final ModelTheme originTheme;
     //generic properties
-    private String name;
-    private List<String> visualThemeIds = null;
-    private Integer defaultViewSize = null;
+    private final String name;
+    private final List<String> visualThemeIds;
+    private final Integer defaultViewSize;
 
     // Autocomplete configuration
     // Default number of items to be displayed in lookup ajax autocompleter
-    private Integer autocompleterDefaultViewSize = null;
+    private final Integer autocompleterDefaultViewSize;
     // Default minimum number of characters an user has to type before the ajax autocompleter activates (jQuery default is 1)
-    private Integer autocompleterDefaultMinLength = null;
+    private final Integer autocompleterDefaultMinLength;
     // Default delay in milliseconds the Autocomplete waits after a keystroke to activate itself. A zero-delay makes sense for local data (more responsive), but can produce a lot of load for remote data, while being less responsive.
-    private Integer autocompleterDefaultDelay = null;
+    private final Integer autocompleterDefaultDelay;
     // Show/hide the ID field that is returned from ajax autocompleter
-    private Boolean autocompleterDisplayReturnField = null;
+    private final Boolean autocompleterDisplayReturnField;
 
     //layer modal
     // Default position and size for lookup layered windows
-    private String lookupPosition = null;
-    private Integer lookupWidth = null;
-    private Integer lookupHeight = null;
+    private final String lookupPosition;
+    private final Integer lookupWidth;
+    private final Integer lookupHeight;
     //Default size for layered modal windows
-    private Integer linkDefaultLayeredModalWidth = null;
-    private Integer linkDefaultLayeredModalHeight = null;
+    private final Integer linkDefaultLayeredModalWidth;
+    private final Integer linkDefaultLayeredModalHeight;
 
     //dedicate theme properties
-    private Map<String, Object> themeProperties;
+    private final Map<String, Object> themePropertiesMap;
 
     //template rendering
-    private Map<String, ModelTemplate> modelTemplateMap;
+    private final Map<String, ModelTemplate> modelTemplateMap;
+    private final Map<String, String> modelCommonScreensMap;
 
     //** XML Constructor */
     public ModelTheme(Element themeElement) {
         this.name = themeElement.getAttribute("name");
+        ModelTheme initOriginTheme = null;
+        List<String> initVisualThemeIds = new ArrayList<>();
+        Map<String, Object> initWidgetPropertiesMap = null;
+        Map<String, Object> initThemePropertiesMap = null;
+        Map<String, ModelTemplate> initModelTemplateMap = null;
+        Map<String, String> initModelCommonScreensMap = null;
+
+        //first collect value from XML
         for (Element childElement : UtilXml.childElementList(themeElement)) {
             switch (childElement.getNodeName()) {
                 case "widget-properties":
-                    addWidgetProperties(childElement);
+                    initWidgetPropertiesMap = new HashMap<>();
+                    addWidgetProperties(initWidgetPropertiesMap, childElement);
                     break;
                 case "visual-themes":
-                    List<String> visualThemeIds = new LinkedList<>();
                     for (Element visualTheme : UtilXml.childElementList(childElement)) {
-                        visualThemeIds.add(visualTheme.getAttribute("id"));
+                        initVisualThemeIds.add(visualTheme.getAttribute("id"));
                     }
-                    this.visualThemeIds = Collections.unmodifiableList(visualThemeIds);
                 case "theme-properties":
+                    initThemePropertiesMap = new HashMap<>();
                     for (Element property : UtilXml.childElementList(childElement)) {
-                        addThemeProperty(property);
+                        addThemeProperty(initThemePropertiesMap, property);
                     }
                     break;
                 case "templates":
                     for (Element template : UtilXml.childElementList(childElement)) {
-                        addTemplate(template);
+                        initModelTemplateMap = new HashMap<>();
+                        initModelTemplateMap.put(template.getAttribute("name"), new ModelTemplate(template));
                     }
                     break;
                 case "extends":
                     try {
-                        this.originTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
+                        initOriginTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
                     } catch (IOException | ParserConfigurationException | SAXException e) {
                         Debug.logError("Impossible to read the origin theme at location " + childElement.getAttribute("location"), module);
                     }
                     break;
+                case "common-screens":
+                    initModelCommonScreensMap = new HashMap<>();
+                    for (Element screenPurpose : UtilXml.childElementList(childElement)) {
+                        String defaultLocation = screenPurpose.getAttribute("default-location");
+                        for (Element screen : UtilXml.childElementList(screenPurpose)) {
+                            String name = screen.getAttribute("name");
+                            String location = screen.getAttribute("location");
+                            if (location == null) location = defaultLocation;
+                            if (location == null) {
+                                Debug.logWarning("We can resolve the screen location " + name + " in the theme " + this.name + " so no added it", module);
+                                continue;
+                            }
+                            if (initModelCommonScreensMap.containsKey(name)) {
+                                Debug.logWarning("We detect a second screen " + name + " in the theme " + this.name + " so no added it a second time", module);
+                                continue;
+                            }
+                            initModelCommonScreensMap.put(name, location);
+                        }
+                    }
+                    break;
             }
         }
-        if (this.originTheme != null) {
-            extendFromOrigin();
+
+        // resolve value from the origin theme
+        this.originTheme = (initOriginTheme != null) ? initOriginTheme : null; 
+        if (initOriginTheme != null) {
+            extendFromOrigin(initWidgetPropertiesMap, initThemePropertiesMap, initModelTemplateMap, initModelCommonScreensMap);
         }
-        if (themeProperties != null) themeProperties = Collections.unmodifiableMap(themeProperties);
-        if (modelTemplateMap != null) modelTemplateMap = Collections.unmodifiableMap(modelTemplateMap);
+
+        // now store all values on final variable
+        this.defaultViewSize = (Integer) initWidgetPropertiesMap.get("defaultViewSize");
+        this.autocompleterDefaultViewSize = (Integer) initWidgetPropertiesMap.get("autocompleterDefaultViewSize");
+        this.autocompleterDefaultMinLength = (Integer) initWidgetPropertiesMap.get("autocompleterDefaultMinLength");
+        this.autocompleterDefaultDelay = (Integer) initWidgetPropertiesMap.get("autocompleterDefaultDelay");
+        this.autocompleterDisplayReturnField = (Boolean) initWidgetPropertiesMap.get("autocompleterDisplayReturnField");
+        this.lookupPosition = (String) initWidgetPropertiesMap.get("lookupPosition");
+        this.lookupWidth = (Integer) initWidgetPropertiesMap.get("lookupWidth");
+        this.lookupHeight = (Integer) initWidgetPropertiesMap.get("lookupHeight");
+        this.linkDefaultLayeredModalWidth = (Integer) initWidgetPropertiesMap.get("linkDefaultLayeredModalWidth");
+        this.linkDefaultLayeredModalHeight = (Integer) initWidgetPropertiesMap.get("linkDefaultLayeredModalHeight");
+        this.visualThemeIds = Collections.unmodifiableList(initVisualThemeIds);
+        this.themePropertiesMap = (initThemePropertiesMap != null ? Collections.unmodifiableMap(initThemePropertiesMap) : null);
+        this.modelTemplateMap = (initModelTemplateMap != null ? Collections.unmodifiableMap(initModelTemplateMap) : null);
+        this.modelCommonScreensMap = (initModelCommonScreensMap != null ? Collections.unmodifiableMap(initModelCommonScreensMap) : null);
     }
 
     public String getName() {
@@ -173,92 +215,92 @@ public class ModelTheme {
 
     /**
      * */
-    private void extendFromOrigin() {
-        if (this.defaultViewSize == null) this.defaultViewSize = originTheme.defaultViewSize;
-        if (this.autocompleterDefaultViewSize == null) this.autocompleterDefaultViewSize = originTheme.autocompleterDefaultViewSize;
-        if (this.autocompleterDefaultMinLength == null) this.autocompleterDefaultMinLength = originTheme.autocompleterDefaultMinLength;
-        if (this.autocompleterDefaultDelay == null) this.autocompleterDefaultDelay = originTheme.autocompleterDefaultDelay;
-        if (this.autocompleterDisplayReturnField == null) this.autocompleterDisplayReturnField = originTheme.autocompleterDisplayReturnField;
-        if (this.lookupPosition == null) this.lookupPosition = originTheme.lookupPosition;
-        if (this.lookupWidth == null) this.lookupWidth = originTheme.lookupWidth;
-        if (this.lookupHeight == null) this.lookupHeight = originTheme.lookupHeight;
-        if (this.linkDefaultLayeredModalWidth == null) this.linkDefaultLayeredModalWidth = originTheme.linkDefaultLayeredModalWidth;
-        if (this.linkDefaultLayeredModalHeight == null) this.linkDefaultLayeredModalHeight = originTheme.linkDefaultLayeredModalHeight;
+    private void extendFromOrigin(Map<String, Object> initWidgetPropertiesMap, Map<String, Object> initThemePropertiesMap,
+                                  Map<String, ModelTemplate> initModelTemplateMap, Map<String, String> initModelCommonScreensMap) {
+        if (initWidgetPropertiesMap.get("defaultViewSize") == null) initWidgetPropertiesMap.put("defaultViewSize", originTheme.defaultViewSize);
+        if (initWidgetPropertiesMap.get("autocompleterDefaultViewSize")  == null) initWidgetPropertiesMap.put("autocompleterDefaultViewSize", originTheme.autocompleterDefaultViewSize);
+        if (initWidgetPropertiesMap.get("autocompleterDefaultMinLength")  == null) initWidgetPropertiesMap.put("autocompleterDefaultMinLength", originTheme.autocompleterDefaultMinLength);
+        if (initWidgetPropertiesMap.get("autocompleterDefaultDelay")  == null) initWidgetPropertiesMap.put("autocompleterDefaultDelay", originTheme.autocompleterDefaultDelay);
+        if (initWidgetPropertiesMap.get("autocompleterDisplayReturnField") == null) initWidgetPropertiesMap.put("autocompleterDisplayReturnField", originTheme.autocompleterDisplayReturnField);
+        if (initWidgetPropertiesMap.get("lookupPosition") == null) initWidgetPropertiesMap.put("lookupPosition", originTheme.lookupPosition);
+        if (initWidgetPropertiesMap.get("lookupWidth") == null) initWidgetPropertiesMap.put("lookupWidth", originTheme.lookupWidth);
+        if (initWidgetPropertiesMap.get("lookupHeight") == null) initWidgetPropertiesMap.put("lookupHeight", originTheme.lookupHeight);
+        if (initWidgetPropertiesMap.get("linkDefaultLayeredModalWidth") == null) initWidgetPropertiesMap.put("linkDefaultLayeredModalWidth", originTheme.linkDefaultLayeredModalWidth);
+        if (initWidgetPropertiesMap.get("linkDefaultLayeredModalHeight") == null) initWidgetPropertiesMap.put("linkDefaultLayeredModalHeight", originTheme.linkDefaultLayeredModalHeight);
 
         // resolve all decicate properties from origin and sucharge by the present dedicate properties
-        if (UtilValidate.isNotEmpty(originTheme.themeProperties)) {
-            Map<String, Object> themePropertiesTmp = new HashMap<>(originTheme.themeProperties);
-            if (this.themeProperties != null) themePropertiesTmp.putAll(this.themeProperties);
-            this.themeProperties = themePropertiesTmp;
+        if (originTheme.themePropertiesMap != null) {
+            Map<String, Object> themePropertiesTmp = new HashMap<>(originTheme.themePropertiesMap);
+            if (initThemePropertiesMap != null) themePropertiesTmp.putAll(initThemePropertiesMap);
+            initThemePropertiesMap = themePropertiesTmp;
         }
 
         // Add modelTemplate present on origin and not on this
-        if (UtilValidate.isNotEmpty(originTheme.modelTemplateMap)) {
-            if (UtilValidate.isNotEmpty(this.modelTemplateMap)) {
+        if (originTheme.modelTemplateMap !=  null) {
+            if (initModelTemplateMap != null) {
                 for (String modelTemplateName : originTheme.modelTemplateMap.keySet()) {
                     ModelTemplate originModelTemplate = originTheme.modelTemplateMap.get(modelTemplateName);
-                    ModelTemplate modelTemplate = this.modelTemplateMap.get(modelTemplateName);
+                    ModelTemplate modelTemplate = initModelTemplateMap.get(modelTemplateName);
                     if (modelTemplate == null) {
-                        this.modelTemplateMap.put(modelTemplateName, originModelTemplate);
+                        initModelTemplateMap.put(modelTemplateName, originModelTemplate);
                     } else {
-                        modelTemplate.extendsFromOrigin(originModelTemplate);
+                        modelTemplate = new ModelTemplate(modelTemplate, originModelTemplate);
                     }
                 }
             } else {
-                this.modelTemplateMap = originTheme.modelTemplateMap;
+                initModelTemplateMap = originTheme.modelTemplateMap;
             }
+        }
+        if (originTheme.modelCommonScreensMap != null) {
+            Map<String, String> modelCommonScreensMapTmp = new HashMap<>(originTheme.modelCommonScreensMap);
+            modelCommonScreensMapTmp.putAll(initModelCommonScreensMap);
+            initModelCommonScreensMap = modelCommonScreensMapTmp;
         }
     }
 
-    private void addWidgetProperties(Element widgetProperties) {
+    private void addWidgetProperties(Map<String, Object> initWidgetPropertiesMap, Element widgetProperties) {
         for (Element childElement : UtilXml.childElementList(widgetProperties)) {
             switch (childElement.getNodeName()) {
                 case "default-view-size":
-                    this.defaultViewSize = Integer.valueOf(childElement.getAttribute("value"));
+                    initWidgetPropertiesMap.put("defaultViewSize", Integer.valueOf(childElement.getAttribute("value")));
                     break;
                 case "autocompleter":
-                    this.autocompleterDefaultDelay = Integer.valueOf(childElement.getAttribute("default-delay"));
-                    this.autocompleterDefaultMinLength = Integer.valueOf(childElement.getAttribute("default-min-lenght"));
-                    this.autocompleterDefaultViewSize = Integer.valueOf(childElement.getAttribute("default-view-size"));
-                    this.autocompleterDisplayReturnField = "true".equalsIgnoreCase(childElement.getAttribute("display-return-field"));
+                    initWidgetPropertiesMap.put("autocompleterDefaultDelay", Integer.valueOf(childElement.getAttribute("default-delay")));
+                    initWidgetPropertiesMap.put("autocompleterDefaultMinLength", Integer.valueOf(childElement.getAttribute("default-min-lenght")));
+                    initWidgetPropertiesMap.put("autocompleterDefaultViewSize", Integer.valueOf(childElement.getAttribute("default-view-size")));
+                    initWidgetPropertiesMap.put("autocompleterDisplayReturnField", "true".equalsIgnoreCase(childElement.getAttribute("display-return-field")));
                     break;
                 case "lookup":
-                    this.lookupPosition = childElement.getAttribute("position");
-                    this.lookupHeight = Integer.valueOf(childElement.getAttribute("height"));
-                    this.lookupWidth = Integer.valueOf(childElement.getAttribute("width"));
+                    initWidgetPropertiesMap.put("lookupPosition", childElement.getAttribute("position"));
+                    initWidgetPropertiesMap.put("lookupHeight", Integer.valueOf(childElement.getAttribute("height")));
+                    initWidgetPropertiesMap.put("lookupWidth", Integer.valueOf(childElement.getAttribute("width")));
                     break;
                 case "layered-modal":
-                    this.linkDefaultLayeredModalHeight = Integer.valueOf(childElement.getAttribute("height"));
-                    this.linkDefaultLayeredModalWidth = Integer.valueOf(childElement.getAttribute("width"));
+                    initWidgetPropertiesMap.put("linkDefaultLayeredModalHeight", Integer.valueOf(childElement.getAttribute("height")));
+                    initWidgetPropertiesMap.put("linkDefaultLayeredModalWidth", Integer.valueOf(childElement.getAttribute("width")));
                     break;
             }
         }
     }
 
-    private void addThemeProperty(Element property) {
-        if (themeProperties == null) themeProperties = new LinkedHashMap<>();
+    private void addThemeProperty(Map<String, Object> initThemePropertiesMap, Element property) {
         String name = property.getAttribute("name");
         String value = property.getAttribute(("value"));
         String type = property.getAttribute("type");
         if (type == null || "String".equals(type) || "java.lang.String".equals(type)) {
-            themeProperties.put(name, value);
+            initThemePropertiesMap.put(name, value);
         } else {
             try {
-                themeProperties.put(name, ObjectType.simpleTypeConvert(value, type, null, null));
+                initThemePropertiesMap.put(name, ObjectType.simpleTypeConvert(value, type, null, null));
             } catch (GeneralException e) {
                 Debug.logError("Impossible to parse the value " + value + " to type " + type + " for the property " + name + " on theme " + this.name, module);
             }
         }
     }
     public Object getProperty(String propertyName) {
-        if (! themeProperties.containsKey(propertyName)
-                || themeProperties.get(propertyName) == null) return "";
-        return themeProperties.get(propertyName);
-    }
-
-    private void addTemplate(Element template) {
-        if (modelTemplateMap == null) modelTemplateMap = new LinkedHashMap<>();
-        modelTemplateMap.put(template.getAttribute("name"), new ModelTemplate(template));
+        if (! themePropertiesMap.containsKey(propertyName)
+                || themePropertiesMap.get(propertyName) == null) return "";
+        return themePropertiesMap.get(propertyName);
     }
 
     public String getType(String name) {
@@ -312,16 +354,16 @@ public class ModelTheme {
      *
      */
     private class ModelTemplate {
-        private String name = null;
-        private String type = null;
-        private String compress = null;
-        private String encoder = null;
-        private String contentType = null;
-        private String encoding = null;
-        private String screenRendererLocation = null;
-        private String formRendererLocation = null;
-        private String menuRendererLocation = null;
-        private String treeRendererLocation = null;
+        private final String name;
+        private final String type;
+        private final String compress;
+        private final String encoder;
+        private final String contentType;
+        private final String encoding;
+        private final String screenRendererLocation;
+        private final String formRendererLocation;
+        private final String menuRendererLocation;
+        private final String treeRendererLocation;
 
         public ModelTemplate(Element template) {
             this.name = template.getAttribute("name");
@@ -330,6 +372,11 @@ public class ModelTheme {
             this.encoder = template.getAttribute("encoder");
             this.contentType = template.getAttribute("contentType");
             this.encoding = template.getAttribute("encoding");
+
+            String screenRendererLocation = null;
+            String formRendererLocation = null;
+            String menuRendererLocation = null;
+            String treeRendererLocation = null;
             for (Element templateFile : UtilXml.childElementList(template)) {
                 switch (templateFile.getAttribute("widget")) {
                     case "screen":
@@ -346,6 +393,22 @@ public class ModelTheme {
                         break;
                 }
             }
+            this. screenRendererLocation = screenRendererLocation;
+            this. formRendererLocation = formRendererLocation;
+            this. menuRendererLocation = menuRendererLocation;
+            this. treeRendererLocation = treeRendererLocation;
+        }
+        public ModelTemplate (ModelTemplate currentModelTemplate, ModelTemplate originModelTemplate) {
+            this.name = currentModelTemplate.name;
+            this.type = currentModelTemplate.type;
+            this.compress = currentModelTemplate.compress != null ? currentModelTemplate.compress : originModelTemplate.compress;
+            this.encoder = currentModelTemplate.encoder != null ? currentModelTemplate.encoder : originModelTemplate.encoder;
+            this.contentType = currentModelTemplate.contentType != null ? currentModelTemplate.contentType : originModelTemplate.contentType;
+            this.encoding = currentModelTemplate.encoding != null ? currentModelTemplate.encoding : originModelTemplate.encoding;
+            this.screenRendererLocation = currentModelTemplate.screenRendererLocation != null ? currentModelTemplate.screenRendererLocation : originModelTemplate.screenRendererLocation;
+            this.formRendererLocation = currentModelTemplate.formRendererLocation != null ? currentModelTemplate.formRendererLocation : originModelTemplate.formRendererLocation;
+            this.treeRendererLocation = currentModelTemplate.treeRendererLocation != null ? currentModelTemplate.treeRendererLocation : originModelTemplate.treeRendererLocation;
+            this.menuRendererLocation = currentModelTemplate.menuRendererLocation != null ? currentModelTemplate.menuRendererLocation : originModelTemplate.menuRendererLocation;
         }
         public String getName() {
             return name;
@@ -376,15 +439,5 @@ public class ModelTheme {
             return menuRendererLocation;
         }
 
-        public void extendsFromOrigin(ModelTemplate originModelTemplate) {
-            if (this.compress == null) this.compress = originModelTemplate.compress;
-            if (this.encoder == null) this.encoder = originModelTemplate.encoder;
-            if (this.contentType == null) this.contentType = originModelTemplate.contentType;
-            if (this.encoding == null) this.encoding = originModelTemplate.encoding;
-            if (this.screenRendererLocation == null) this.screenRendererLocation = originModelTemplate.screenRendererLocation;
-            if (this.formRendererLocation == null) this.formRendererLocation = originModelTemplate.formRendererLocation;
-            if (this.treeRendererLocation == null) this.treeRendererLocation = originModelTemplate.treeRendererLocation;
-            if (this.menuRendererLocation == null) this.menuRendererLocation = originModelTemplate.menuRendererLocation;
-        }
     }
 }

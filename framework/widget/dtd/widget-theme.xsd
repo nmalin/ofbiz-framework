@@ -154,4 +154,44 @@ under the License.
         <xs:attribute type="xs:string" name="location" use="required"/>
     </xs:complexType>
     </xs:element>
+    <xs:element name="common-screens">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="root-decorator" />
+                <xs:element minOccurs="0" maxOccurs="1" ref="subtype-decorator" />
+                <xs:element minOccurs="0" maxOccurs="1" ref="generic-screen" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="root-decorator">
+        <xs:complexType>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="subtype-decorator">
+        <xs:complexType>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="generic-screen">
+        <xs:complexType>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
+            <xs:sequence>
+                <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="screen">
+        <xs:complexType>
+            <xs:attribute type="xs:string" name="name" use="required"/>
+            <xs:attribute type="xs:string" name="location" use="optional"/>
+        </xs:complexType>
+    </xs:element>
+
 </xs:schema>
