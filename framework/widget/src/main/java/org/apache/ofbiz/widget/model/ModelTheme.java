@@ -83,7 +83,7 @@ public class ModelTheme implements Serializable {
         this.name = themeElement.getAttribute("name");
         ModelTheme initOriginTheme = null;
         List<String> initVisualThemeIds = new ArrayList<>();
-        Map<String, Object> initWidgetPropertiesMap = null;
+        Map<String, Object> initWidgetPropertiesMap = new HashMap<>();
         Map<String, Object> initThemePropertiesMap = null;
         Map<String, ModelTemplate> initModelTemplateMap = null;
         Map<String, String> initModelCommonScreensMap = null;
@@ -92,7 +92,6 @@ public class ModelTheme implements Serializable {
         for (Element childElement : UtilXml.childElementList(themeElement)) {
             switch (childElement.getNodeName()) {
                 case "widget-properties":
-                    initWidgetPropertiesMap = new HashMap<>();
                     addWidgetProperties(initWidgetPropertiesMap, childElement);
                     break;
                 case "visual-themes":
@@ -106,8 +105,8 @@ public class ModelTheme implements Serializable {
                     }
                     break;
                 case "templates":
+                    initModelTemplateMap = new HashMap<>();
                     for (Element template : UtilXml.childElementList(childElement)) {
-                        initModelTemplateMap = new HashMap<>();
                         initModelTemplateMap.put(template.getAttribute("name"), new ModelTemplate(template));
                     }
                     break;
@@ -144,6 +143,8 @@ public class ModelTheme implements Serializable {
         // resolve value from the origin theme
         this.originTheme = (initOriginTheme != null) ? initOriginTheme : null; 
         if (initOriginTheme != null) {
+            if (initModelTemplateMap == null) initModelTemplateMap = new HashMap<>();
+            if (initModelCommonScreensMap == null) initModelCommonScreensMap = new HashMap<>();
             extendFromOrigin(initWidgetPropertiesMap, initThemePropertiesMap, initModelTemplateMap, initModelCommonScreensMap);
         }
 
@@ -232,7 +233,8 @@ public class ModelTheme implements Serializable {
         if (originTheme.themePropertiesMap != null) {
             Map<String, Object> themePropertiesTmp = new HashMap<>(originTheme.themePropertiesMap);
             if (initThemePropertiesMap != null) themePropertiesTmp.putAll(initThemePropertiesMap);
-            initThemePropertiesMap = themePropertiesTmp;
+            initThemePropertiesMap.clear();
+            initThemePropertiesMap.putAll(themePropertiesTmp);
         }
 
         // Add modelTemplate present on origin and not on this
@@ -241,11 +243,8 @@ public class ModelTheme implements Serializable {
                 for (String modelTemplateName : originTheme.modelTemplateMap.keySet()) {
                     ModelTemplate originModelTemplate = originTheme.modelTemplateMap.get(modelTemplateName);
                     ModelTemplate modelTemplate = initModelTemplateMap.get(modelTemplateName);
-                    if (modelTemplate == null) {
-                        initModelTemplateMap.put(modelTemplateName, originModelTemplate);
-                    } else {
-                        modelTemplate = new ModelTemplate(modelTemplate, originModelTemplate);
-                    }
+                    modelTemplate = new ModelTemplate(modelTemplate, originModelTemplate);
+                    initModelTemplateMap.put(modelTemplateName, modelTemplate);
                 }
             } else {
                 initModelTemplateMap = originTheme.modelTemplateMap;
@@ -254,7 +253,8 @@ public class ModelTheme implements Serializable {
         if (originTheme.modelCommonScreensMap != null) {
             Map<String, String> modelCommonScreensMapTmp = new HashMap<>(originTheme.modelCommonScreensMap);
             modelCommonScreensMapTmp.putAll(initModelCommonScreensMap);
-            initModelCommonScreensMap = modelCommonScreensMapTmp;
+            initModelCommonScreensMap.clear();
+            initModelCommonScreensMap.putAll(modelCommonScreensMapTmp);
         }
     }
 
@@ -399,16 +399,17 @@ public class ModelTheme implements Serializable {
             this. treeRendererLocation = treeRendererLocation;
         }
         public ModelTemplate (ModelTemplate currentModelTemplate, ModelTemplate originModelTemplate) {
-            this.name = currentModelTemplate.name;
-            this.type = currentModelTemplate.type;
-            this.compress = currentModelTemplate.compress != null ? currentModelTemplate.compress : originModelTemplate.compress;
-            this.encoder = currentModelTemplate.encoder != null ? currentModelTemplate.encoder : originModelTemplate.encoder;
-            this.contentType = currentModelTemplate.contentType != null ? currentModelTemplate.contentType : originModelTemplate.contentType;
-            this.encoding = currentModelTemplate.encoding != null ? currentModelTemplate.encoding : originModelTemplate.encoding;
-            this.screenRendererLocation = currentModelTemplate.screenRendererLocation != null ? currentModelTemplate.screenRendererLocation : originModelTemplate.screenRendererLocation;
-            this.formRendererLocation = currentModelTemplate.formRendererLocation != null ? currentModelTemplate.formRendererLocation : originModelTemplate.formRendererLocation;
-            this.treeRendererLocation = currentModelTemplate.treeRendererLocation != null ? currentModelTemplate.treeRendererLocation : originModelTemplate.treeRendererLocation;
-            this.menuRendererLocation = currentModelTemplate.menuRendererLocation != null ? currentModelTemplate.menuRendererLocation : originModelTemplate.menuRendererLocation;
+            boolean exist = currentModelTemplate != null;
+            this.name = exist ? currentModelTemplate.name : originModelTemplate.name;
+            this.type = exist ? currentModelTemplate.type : originModelTemplate.type;
+            this.compress = exist && currentModelTemplate.compress != null ? currentModelTemplate.compress : originModelTemplate.compress;
+            this.encoder = exist && currentModelTemplate.encoder != null ? currentModelTemplate.encoder : originModelTemplate.encoder;
+            this.contentType = exist && currentModelTemplate.contentType != null ? currentModelTemplate.contentType : originModelTemplate.contentType;
+            this.encoding = exist && currentModelTemplate.encoding != null ? currentModelTemplate.encoding : originModelTemplate.encoding;
+            this.screenRendererLocation = exist && currentModelTemplate.screenRendererLocation != null ? currentModelTemplate.screenRendererLocation : originModelTemplate.screenRendererLocation;
+            this.formRendererLocation = exist && currentModelTemplate.formRendererLocation != null ? currentModelTemplate.formRendererLocation : originModelTemplate.formRendererLocation;
+            this.treeRendererLocation = exist && currentModelTemplate.treeRendererLocation != null ? currentModelTemplate.treeRendererLocation : originModelTemplate.treeRendererLocation;
+            this.menuRendererLocation = exist && currentModelTemplate.menuRendererLocation != null ? currentModelTemplate.menuRendererLocation : originModelTemplate.menuRendererLocation;
         }
         public String getName() {
             return name;
