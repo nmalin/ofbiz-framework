@@ -41,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ofbiz.base.lang.JSON;
@@ -61,7 +60,6 @@ import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.security.Security;
 import org.apache.ofbiz.widget.model.ThemeFactory;
 import org.apache.ofbiz.widget.renderer.Theme;
-import org.xml.sax.SAXException;
 
 /**
  * Common Services
@@ -257,12 +255,7 @@ public class CommonEvents {
     public static String setSessionTheme(HttpServletRequest request, HttpServletResponse response) {
         String visualThemeId = request.getParameter("userPrefValue");
         if (UtilValidate.isNotEmpty(visualThemeId)) {
-            Theme theme = null;
-            try {
-                theme = ThemeFactory.getThemeFromId(visualThemeId);
-            } catch (IOException | ParserConfigurationException | SAXException e) {
-                Debug.logError("Impossible to resolve the theme with visualThemeId " + visualThemeId, module);
-            }
+            Theme theme = ThemeFactory.getThemeFromId(visualThemeId);
             if (theme != null) {
                 UtilHttp.setTheme(request, theme);
             }

@@ -626,12 +626,7 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
         }
 
         //FIXME propage correctly the theme
-        Theme theme = null;
-        try {
-            theme = ThemeFactory.getThemeFromId("COMMON");
-        } catch (IOException | ParserConfigurationException | SAXException e) {
-            throw new GeneralException("Impossible to read the theme");
-        }
+        Theme theme = ThemeFactory.getThemeFromId("COMMON");
         ModelTheme modelTheme = theme.getModelTheme();
 
         // if the target mimeTypeId is not a text type, throw an exception

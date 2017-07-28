@@ -55,21 +55,24 @@ public class ThemeFactory {
     public static final UtilCache<String, ModelTheme> themeLocationCache = UtilCache.createUtilCache("widget.theme.locationResource", 0, 0, false);
     public static final UtilCache<String, ModelTheme> themeVisualThemeIdCache = UtilCache.createUtilCache("widget.theme.idAndlocationResource", 0, 0, false);
 
-    public static ModelTheme getModelThemeFromLocation(String resourceName)
-            throws IOException, SAXException, ParserConfigurationException {
+    public static ModelTheme getModelThemeFromLocation(String resourceName) {
         ModelTheme modelTheme = themeLocationCache.get(resourceName);
         if (modelTheme == null) {
             synchronized (ThemeFactory.class) {
-                modelTheme = themeLocationCache.get(resourceName);
-                if (modelTheme == null) {
-                    URL themeFileUrl = null;
-                    themeFileUrl = FlexibleLocation.resolveLocation(resourceName);
-                    if (themeFileUrl == null) {
-                        throw  new IllegalArgumentException("Could not resolve location to URL: " + resourceName);
+                try {
+                    modelTheme = themeLocationCache.get(resourceName);
+                    if (modelTheme == null) {
+                        URL themeFileUrl = null;
+                        themeFileUrl = FlexibleLocation.resolveLocation(resourceName);
+                        if (themeFileUrl == null) {
+                            throw new IllegalArgumentException("Could not resolve location to URL: " + resourceName);
+                        }
+                        Document themeFileDoc = UtilXml.readXmlDocument(themeFileUrl, true, true);
+                        modelTheme = readThemeDocument(themeFileDoc, resourceName);
+                        themeLocationCache.put(resourceName, modelTheme);
                     }
-                    Document themeFileDoc = UtilXml.readXmlDocument(themeFileUrl, true, true);
-                    modelTheme = readThemeDocument(themeFileDoc, resourceName);
-                    themeLocationCache.put(resourceName, modelTheme);
+                } catch (IOException | ParserConfigurationException | SAXException e) {
+                    Debug.logError("Impossible to resolve the theme from the resourceName " + resourceName, module);
                 }
             }
         }
@@ -85,22 +88,26 @@ public class ThemeFactory {
         return null;
     }
 
-    public static Theme getThemeFromId(String visualThemeId)
-            throws IOException, SAXException, ParserConfigurationException {
+    public static Theme getThemeFromId(String visualThemeId) {
+        if (visualThemeId == null) return null;
         ModelTheme modelTheme = themeVisualThemeIdCache.get(visualThemeId);
         if (modelTheme == null) {
             synchronized (ThemeFactory.class) {
                 modelTheme = themeVisualThemeIdCache.get(visualThemeId);
                 if (modelTheme == null) {
                     String ofbizHome = System.getProperty("ofbiz.home");
-                    List<File> xmlThemes = FileUtil.findXmlFiles(ofbizHome, "themes", "theme", "widget-theme.xsd");
-                    for (File xmlTheme : xmlThemes) {
-                        modelTheme = getModelThemeFromLocation(xmlTheme.toURI().toURL().toString());
-                        if (modelTheme != null) {
-                            for (String containsVisualThemeId : modelTheme.getVisualThemeIds()) {
-                                themeVisualThemeIdCache.put(containsVisualThemeId, modelTheme);
+                    try {
+                        List<File> xmlThemes = FileUtil.findXmlFiles(ofbizHome, "themes", "theme", "widget-theme.xsd");
+                        for (File xmlTheme : xmlThemes) {
+                            modelTheme = getModelThemeFromLocation(xmlTheme.toURI().toURL().toString());
+                            if (modelTheme != null) {
+                                for (String containsVisualThemeId : modelTheme.getVisualThemeIds()) {
+                                    themeVisualThemeIdCache.put(containsVisualThemeId, modelTheme);
+                                }
                             }
                         }
+                    } catch (IOException e) {
+                        Debug.logError("Impossible to resolve the theme from the visualThemeId " + visualThemeId + " throw: " + e, module);
                     }
                 }
             }
@@ -112,11 +119,10 @@ public class ThemeFactory {
     public static Theme resolveTheme(HttpServletRequest request) {
         //search on request
         HttpSession session = request.getSession();
-        Theme theme = (Theme) request.getAttribute("theme");
+        Theme theme = (Theme) session.getAttribute("theme");
         if (theme == null) {
-            theme = (Theme) session.getAttribute("theme");
+            theme = (Theme) request.getAttribute("theme");
         }
-        if (theme != null) return theme;
 
         String visualThemeId = null;
         //resolve on user pref
@@ -145,11 +151,6 @@ public class ThemeFactory {
         if (visualThemeId == null) {
             visualThemeId = UtilProperties.getPropertyValue("general", "VISUAL_THEME", "COMMON");
         }
-        try {
-            return getThemeFromId(visualThemeId);
-        } catch (IOException | ParserConfigurationException | SAXException e) {
-            Debug.logError("Impossible to resolve the theme with visualThemeId " + visualThemeId, module);
-        }
-        return null;
+        return getThemeFromId(visualThemeId);
     }
 }

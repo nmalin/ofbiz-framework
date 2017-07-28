@@ -18,20 +18,17 @@
  *******************************************************************************/
 package org.apache.ofbiz.widget.model;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.ObjectType;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 /**
  * Widget Theme Library - Widget model class.
@@ -111,11 +108,7 @@ public class ModelTheme implements Serializable {
                     }
                     break;
                 case "extends":
-                    try {
-                        initOriginTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
-                    } catch (IOException | ParserConfigurationException | SAXException e) {
-                        Debug.logError("Impossible to read the origin theme at location " + childElement.getAttribute("location"), module);
-                    }
+                    initOriginTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
                     break;
                 case "common-screens":
                     initModelCommonScreensMap = new HashMap<>();
