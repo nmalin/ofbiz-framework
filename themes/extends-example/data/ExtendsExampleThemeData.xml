@@ -19,7 +19,7 @@ under the License.
 -->
 
 <entity-engine-xml>
-    <VisualTheme visualThemeId="EXTENDS_EXAMPLE" visualThemeSetId="BACKOFFICE" description="Flat Grey - Floating Layout, Sight-Impaired Accessible, Bidirectional"/>
+    <VisualTheme visualThemeId="EXTENDS_EXAMPLE" visualThemeSetId="BACKOFFICE" description="Extends - Example (based on flatgrey)"/>
     
     <VisualThemeResource visualThemeId="EXTENDS_EXAMPLE" resourceTypeEnumId="VT_NAME" resourceValue="EXTENDS_EXAMPLE" sequenceId="01"/>
     <VisualThemeResource visualThemeId="EXTENDS_EXAMPLE" resourceTypeEnumId="VT_SHORTCUT_ICON" resourceValue="/images/ofbiz.ico" sequenceId="01"/>
