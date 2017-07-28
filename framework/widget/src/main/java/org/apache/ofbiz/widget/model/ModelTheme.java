@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.ObjectType;
+import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.w3c.dom.Element;
 
@@ -117,8 +118,8 @@ public class ModelTheme implements Serializable {
                         for (Element screen : UtilXml.childElementList(screenPurpose)) {
                             String name = screen.getAttribute("name");
                             String location = screen.getAttribute("location");
-                            if (location == null) location = defaultLocation;
-                            if (location == null) {
+                            if (UtilValidate.isEmpty(location)) location = defaultLocation;
+                            if (UtilValidate.isEmpty(location)) {
                                 Debug.logWarning("We can resolve the screen location " + name + " in the theme " + this.name + " so no added it", module);
                                 continue;
                             }
@@ -343,6 +344,10 @@ public class ModelTheme implements Serializable {
         return null;
     }
 
+    public Map<String,String> getModelCommonScreens() {
+        return modelCommonScreensMap;
+    }
+
     /**
      *
      */
@@ -432,6 +437,5 @@ public class ModelTheme implements Serializable {
         public String getMenuRendererLocation() {
             return menuRendererLocation;
         }
-
     }
 }
