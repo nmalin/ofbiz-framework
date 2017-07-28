@@ -79,6 +79,7 @@ import org.apache.ofbiz.service.ModelService;
 import org.apache.ofbiz.service.ServiceUtil;
 import org.apache.ofbiz.webapp.WebAppUtil;
 import org.apache.ofbiz.webapp.stats.VisitHandler;
+import org.apache.ofbiz.widget.model.ThemeFactory;
 
 /**
  * Common Workers
@@ -499,6 +500,12 @@ public class LoginWorker {
             }
             try {
                 result = dispatcher.runSync("setUserPreference", UtilMisc.toMap("userPrefTypeId", "javaScriptEnabled", "userPrefGroupTypeId", "GLOBAL_PREFERENCES", "userPrefValue", javaScriptEnabled, "userLogin", userLogin));
+                //get theme
+                result = dispatcher.runSync("getUserPreference", UtilMisc.toMap("userLogin", userLogin, "userPrefTypeId", "VISUAL_THEME"));
+                String visualThemeId = (String) result.get("userPrefValue");
+                if ( visualThemeId != null) {
+                    session.setAttribute("theme", ThemeFactory.getThemeFromId(visualThemeId));
+                }
             } catch (GenericServiceException e) {
                 Debug.logError(e, "Error setting user preference", module);
             }
