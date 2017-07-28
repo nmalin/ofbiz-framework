@@ -75,15 +75,15 @@ public class MacroScreenViewHandler extends AbstractViewHandler {
         String treeMacroLibraryPath = modelTheme.getTreeRendererLocation(getName());
         String menuMacroLibraryPath = modelTheme.getMenuRendererLocation(getName());
         ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(modelTheme.getType(getName()), screenMacroLibraryPath);
-        if (!formMacroLibraryPath.isEmpty()) {
+        if (UtilValidate.isNotEmpty(formMacroLibraryPath)) {
             FormStringRenderer formStringRenderer = new MacroFormRenderer(formMacroLibraryPath, request, response);
             context.put("formStringRenderer", formStringRenderer);
         }
-        if (!treeMacroLibraryPath.isEmpty()) {
+        if (UtilValidate.isNotEmpty(treeMacroLibraryPath)) {
             TreeStringRenderer treeStringRenderer = new MacroTreeRenderer(treeMacroLibraryPath, writer);
             context.put("treeStringRenderer", treeStringRenderer);
         }
-        if (!menuMacroLibraryPath.isEmpty()) {
+        if (UtilValidate.isNotEmpty(menuMacroLibraryPath)) {
             MenuStringRenderer menuStringRenderer = new MacroMenuRenderer(menuMacroLibraryPath, request, response);
             context.put("menuStringRenderer", menuStringRenderer);
         }
