@@ -1,3 +1,7 @@
+import org.apache.ofbiz.widget.model.ModelTheme
+import org.apache.ofbiz.widget.model.ThemeFactory
+import org.apache.ofbiz.widget.renderer.Theme
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -27,3 +31,9 @@ if (!globalContext.themeResources) {
     }
 }
 context.globalContext = globalContext
+
+Theme theme = ThemeFactory.resolveTheme(request)
+if (theme) {
+    ModelTheme modelTheme = theme.getModelTheme()
+    globalContext.commonScreenLocations = modelTheme.getModelCommonScreens()
+}
