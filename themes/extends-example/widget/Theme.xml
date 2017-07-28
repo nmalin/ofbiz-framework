@@ -35,10 +35,10 @@ under the License.
     </templates>
     <common-screens>
         <structural-decorator>
-            <decorator name="SimpleDecorator" location="component://mytheme/widget/MyDecoratorScreens.xml"/>
+            <decorator name="GlobalDecorator" location="component://extends-example/widget/CommonScreens.xml"/>
         </structural-decorator>
-        <general-screen >
-            <screen name="EventMessages" location="component://mytheme/widget/MyTemplateScreens.xml"/>
-        </general-screen>
+        <embed-decorator default-location="component://common-theme/widget/CommonScreens.xml">
+            <screen name="FindScreenDecorator"/>
+        </embed-decorator>
     </common-screens>
 </theme>
