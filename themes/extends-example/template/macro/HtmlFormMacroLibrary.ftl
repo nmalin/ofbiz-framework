@@ -25,4 +25,3 @@ under the License.
         &nbsp;<#t/>
     </#if>
 </#macro>
-<#macro renderHyperlinkField></#macro>
