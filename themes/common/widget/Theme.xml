@@ -92,10 +92,10 @@ under the License.
             <screen name="FoReportDecorator"/>
             <screen name="GlobalFoDecorator"/>
         </structural-decorator>
-        <embed-decorator default-location="component://common-theme/widget/CommonEmbedScreens.xml">
+        <embed-decorator default-location="component://common-theme/widget/CommonScreens.xml">
             <screen name="FindScreenDecorator"/>
         </embed-decorator>
-        <general-screen default-location="component://common-theme/widget/CommonDedicateScreens.xml">
+        <general-screen default-location="component://common-theme/widget/CommonScreens.xml">
             <screen name="geoChart"/>
             <screen name="EventMessages"/>
             <screen name="countries"/>
