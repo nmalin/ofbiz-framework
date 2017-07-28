@@ -18,11 +18,11 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<theme name="tomahawk"
+<theme name="bluelight"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="TOMAHAWK"/>
+        <visual-theme id="BLUELIGHT"/>
     </visual-themes>
-    <extends location="component://common-theme/theme.xml"/>
+    <extends location="component://common-theme/widget/Theme.xml"/>
 </theme>

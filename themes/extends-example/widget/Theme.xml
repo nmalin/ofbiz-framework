@@ -24,7 +24,7 @@ under the License.
     <visual-themes>
         <visual-theme id="EXTENDS_EXAMPLE"/>
     </visual-themes>
-    <extends location="component://common-theme/theme.xml"/>
+    <extends location="component://common-theme/widget/Theme.xml"/>
     <theme-properties>
         <property name="jgrowl.position" value="top-left" type="String"/>
     </theme-properties>

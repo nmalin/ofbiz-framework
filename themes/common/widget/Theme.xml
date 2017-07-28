@@ -83,19 +83,37 @@ under the License.
 
     <common-screens><!--list all common screen and decorator global to each application that each theme can be surcharge or not and use the screen present on common theme-->
         <structural-decorator default-location="component://common-theme/widget/CommonScreens.xml">
-            <decorator name="GlobalDecorator"/>
-            <decorator name="LookupDecorator"/>
-            <decorator name="SimpleDecorator"/>
+            <screen name="AjaxGlobalDecorator"/>
+            <screen name="ajaxAutocompleteOptions"/>
+            <screen name="GlobalActions"/>
+            <screen name="GlobalDecorator"/>
+            <screen name="LookupDecorator"/>
+            <screen name="SimpleDecorator"/>
+            <screen name="FoReportDecorator"/>
+            <screen name="GlobalFoDecorator"/>
         </structural-decorator>
         <embed-decorator default-location="component://common-theme/widget/CommonEmbedScreens.xml">
-            <decorator name="FindScreenDecorator"/>
-            <decorator name="EditScreenDecorator"/>
-            <decorator name="ListAndEditScreenDecorator"/>
+            <screen name="FindScreenDecorator"/>
         </embed-decorator>
         <general-screen default-location="component://common-theme/widget/CommonDedicateScreens.xml">
             <screen name="geoChart"/>
             <screen name="EventMessages"/>
             <screen name="countries"/>
+            <screen name="states"/>
+            <screen name="cctypes"/>
+            <screen name="ccmonths"/>
+            <screen name="ccyears"/>
+            <screen name="genericLink"/>
+            <screen name="ajaxAutocompleteOptions"/>
+            <screen name="FoError"/>
+            <screen name="login"/>
+            <screen name="ajaxNotLoggedIn"/>
+            <screen name="requirePasswordChange"/>
+            <screen name="forgotPassword_step1"/>
+            <screen name="forgotPassword_step2"/>
+            <screen name="forgotPassword"/>
+            <screen name="help"/>
+            <screen name="viewBlocked"/>
         </general-screen>
     </common-screens>
 </theme>
