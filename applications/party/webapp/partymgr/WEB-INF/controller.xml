@@ -663,7 +663,7 @@ under the License.
     </request-map>
     <request-map uri="removeAttachFile">
         <security https="true" auth="true"/>
-        <event type="service" invoke="removeCommEventContentAssoc"/>
+        <event type="service" invoke="expireCommEventContentAssoc"/>
         <response name="success" type="request" value="EditCommunicationEvent"/>
         <response name="error" type="view" value="EditCommunicationEvent"/>
     </request-map>
@@ -1270,9 +1270,9 @@ under the License.
         <response name="success" type="view" value="ProfileEditUserLoginSecurityGroups"/>
         <response name="error" type="view" value="ProfileEditUserLoginSecurityGroups"/>
     </request-map>
-    <request-map uri="ProfileRemoveUserLoginFromSecurityGroup">
+    <request-map uri="ProfileExpireUserLoginFromSecurityGroup">
         <security https="true" auth="true"/>
-        <event type="service" path="" invoke="removeUserLoginToSecurityGroup"/>
+        <event type="service" path="" invoke="expireUserLoginSecurityGroup"/>
         <response name="success" type="view" value="ProfileEditUserLoginSecurityGroups"/>
         <response name="error" type="view" value="ProfileEditUserLoginSecurityGroups"/>
     </request-map>

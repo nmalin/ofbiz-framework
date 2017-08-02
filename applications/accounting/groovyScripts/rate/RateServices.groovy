@@ -19,7 +19,6 @@
 
 import org.apache.ofbiz.base.util.UtilDateTime
 import org.apache.ofbiz.base.util.UtilProperties
-import org.apache.ofbiz.base.util.UtilValidate
 import org.apache.ofbiz.entity.GenericValue
 import org.apache.ofbiz.entity.util.EntityUtil
 import org.apache.ofbiz.service.ServiceUtil
@@ -49,8 +48,7 @@ def updateRateAmount() {
     if (rateAmountLookedUpValue) {
         updating = (rateAmountLookedUpValue.fromDate.compareTo(newEntity.fromDate) == 0)
         if (rateAmountLookedUpValue.rateAmount != rateAmount) {
-            Map expireRateAmountMap = dispatcher.getDispatchContext().makeValidContext('expireRateAmount', 'IN', rateAmountLookedUpValue)
-            result = run service: 'expireRateAmount', with: expireRateAmountMap
+            result = run service: 'expireRateAmount', with: rateAmountLookedUpValue
             if (ServiceUtil.isError(result)) return result
         } else {
             return error(UtilProperties.getMessage('AccountingErrorUiLabels', 'AccountingUpdateRateAmountAlreadyExist', locale))
@@ -69,7 +67,7 @@ def expireRateAmount() {
     if (!lookedUpValue.rateCurrencyUomId) {
         lookedUpValue.rateCurrencyUomId = UtilProperties.getPropertyValue('general.properties', 'currency.uom.id.default')
     }
-    lookedUpValue = from('RateAmount').where(lookedUpValue.getFields(lookedUpValue.getModelEntity().getPkFieldNames())).queryOne()
+    lookedUpValue = from('RateAmount').where(lookedUpValue).queryOne()
     if (lookedUpValue) {
         Timestamp previousDay = UtilDateTime.adjustTimestamp(UtilDateTime.nowTimestamp(), 5, -1)
         lookedUpValue.thruDate = UtilDateTime.getDayEnd(previousDay)
@@ -89,7 +87,7 @@ def deleteRateAmount() {
 
 def updatePartyRate() {
     List<GenericValue> partyRates = from('PartyRate').where([partyId: partyId, rateTypeId: rateTypeId]).queryList()
-    if (UtilValidate.isNotEmpty(partyRates)) {
+    if (partyRates) {
         GenericValue partyRate = EntityUtil.getFirst(partyRates)
         partyRate.thruDate = UtilDateTime.nowTimestamp()
     }
@@ -106,8 +104,7 @@ def updatePartyRate() {
         }
     }
     if (parameters.rateAmount) {
-        Map createRateAmountMap = dispatcher.getDispatchContext().makeValidContext('updateRateAmount', 'IN', parameters)
-        result = run service: 'updateRateAmount', with: createRateAmountMap
+        result = run service: 'updateRateAmount', with: parameters
         if (ServiceUtil.isError(result)) return result
     }
     return success()
@@ -116,14 +113,13 @@ def deletePartyRate() {
     return error('delete party rate isn\'t possible, please update your code with service name "expirePartyRate" instead "deletePartyRate"')
 }
 def expirePartyRate() {
-    GenericValue lookedUpValue = from('PartyRate').where([partyId: partyId, rateTypeId: rateTypeId, fromDate: fromDate]).queryOne()
+    GenericValue lookedUpValue = from('PartyRate').where(parameters).queryOne()
     if (lookedUpValue) {
         lookedUpValue.thruDate = UtilDateTime.nowTimestamp()
         lookedUpValue.store()
 
         //expire related rate amount
-        Map expireRateAmountMap = dispatcher.getDispatchContext().makeValidContext('expireRateAmount', 'IN', parameters)
-        result = run service: 'expireRateAmount', with: expireRateAmountMap
+        result = run service: 'expireRateAmount', with: parameters
         if (ServiceUtil.isError(result)) return result
     }
     return success()
@@ -148,16 +144,11 @@ def getRateAmount() {
     For a easier debugging time, there is a log triggered when no records are found for the input. This log
     shows up when there are rateAmounts corresponding to the input parameters without the rateCurrencyUomId and
     the periodTypeId.*/
-    if (!parameters.rateCurrencyUomId) {
-        parameters.rateCurrencyUomId = UtilProperties.getPropertyValue('general.properties', 'currency.uom.id.default', 'USD')
-    }
-    if (!parameters.periodTypeId) {
-        parameters.periodTypeId = 'RATE_HOUR'
-    }
-    String serviceName = null;
+    String serviceName = null
+    String level = "rateTypeId"
     if (parameters.workEffortId && parameters.workEffortId != '_NA_') {
         // workeffort level
-        level = 'workEffort'
+        level = 'workEffortId'
         serviceName = 'getRatesAmountsFromWorkEffortId'
     } else if (parameters.partyId && parameters.partyId != '_NA_') {
         // party level
@@ -169,29 +160,33 @@ def getRateAmount() {
         serviceName = 'getRatesAmountsFromEmplPositionTypeId'
     }
     if (serviceName) {
-        logError(parameters.toString() + " " + serviceName.toString())
-        Map result = run service: serviceName, with: parameters
-        parameters.ratesList = result.ratesList
-        logError(parameters.ratesList.toString())
-        result = run service: 'filterRateAmountList', with: parameters
-        parameters.ratesList = result.filteredRatesList
+        Map serviceContextMap = new HashMap<>(parameters)
+        if (!serviceContextMap.rateCurrencyUomId) {
+            serviceContextMap.rateCurrencyUomId = UtilProperties.getPropertyValue('general.properties', 'currency.uom.id.default', 'USD')
+        }
+        Map result = run service: serviceName, with: serviceContextMap
+        serviceContextMap.ratesList = result.ratesList
+        result = run service: 'filterRateAmountList', with: serviceContextMap
+        ratesList = result.filteredRatesList
     }
 
-    if (UtilValidate.isEmpty(parameters.ratesList)) {
-        parameters.ratesList = from('RateAmount').where([rateTypeId: parameters.rateTypeId]).queryList();
-        Map result = run service: 'filterRateAmountList', with: parameters
-        parameters.ratesList = EntityUtil.filterByDate(result.filteredRatesList)
+    if (!ratesList) {
+        ratesList = from('RateAmount').where([rateTypeId: parameters.rateTypeId]).queryList();
+        Map serviceContextMap = new HashMap<>(parameters)
+        serviceContextMap.ratesList = ratesList
+        Map result = run service: 'filterRateAmountList', with: serviceContextMap
+        ratesList = EntityUtil.filterByDate(result.filteredRatesList)
     }
 
-    if (UtilValidate.isEmpty(parameters.ratesList)) {
-        rateType = from('RateAmount').where([rateTypeId: parameters.rateTypeId]).queryOne()
-        logError('A valid rate amount could not be found for rateType: ' + rateType.description)
+    if (!ratesList) {
+        rateType = from('RateAmount').where(parameters).queryOne()
+        logError('A valid rate amount could not be found for rateType: ' + rateType?.description)
     }
 
     // We narrowed as much as we could the result, now returning the first record of the list
     Map result = success()
-    if (UtilValidate.isNotEmpty(parameters.ratesList)) {
-        rateAmount = parameters.ratesList[0]
+    if (ratesList) {
+        rateAmount = ratesList[0]
         if (! rateAmount.rateAmount) rateAmount.rateAmount = BigDecimal.ZERO
         result.rateAmount = rateAmount.rateAmount
         result.periodTypeId = rateAmount.periodTypeId
@@ -214,10 +209,10 @@ def getRatesAmountsFrom(String field) {
                      rateCurrencyUomId: parameters.rateCurrencyUomId]
     condition.put(field, parameters.get(field))
     List ratesList = from('RateAmount').where(condition).filterByDate().queryList()
-    if (UtilValidate.isEmpty(ratesList)) {
-        GenericValue periodType = from('PeriodType').where([periodTypeId: parameters.periodTypeId]).queryOne()
-        GenericValue rateType = from('RateType').where([rateTypeId: parameters.rateTypeId]).queryOne()
-        GenericValue partyNameView = from('PartyNameView').where([partyId: parameters.partyId]).queryOne()
+    if (!ratesList) {
+        GenericValue periodType = from('PeriodType').where(parameters).queryOne()
+        GenericValue rateType = from('RateType').where(parameters).queryOne()
+        GenericValue partyNameView = from('PartyNameView').where(parameters).queryOne()
         logError('A valid rate entry could be found for rateType:' + rateType.description + ', ' + entityName + ':' + parameters.get(field)
                 + ', party: ' + partyNameView.lastName + partyNameView.middleName + partyNameView.firstName + partyNameView.groupName
                 + ' However.....not for the period:' + periodType.description + ' and currency:' + parameters.rateCurrencyUomId)
@@ -241,7 +236,7 @@ def getRatesAmountsFromEmplPositionTypeId() {
 
 //Filter a list of rateAmount. The result is the most heavily-filtered non-empty list
 def filterRateAmountList() {
-    if (UtilValidate.isEmpty(parameters.ratesList)) {
+    if (!parameters.ratesList) {
         logWarning('The list parameters.ratesList was empty, not processing any further')
         return success()
     }
@@ -260,10 +255,11 @@ def filterRateAmountList() {
         filterMap.rateTypeId = parameters.rateTypeId
     }
     List tempRatesFilteredList = EntityUtil.filterByAnd(parameters.ratesList, filterMap)
-    if (UtilValidate.isNotEmpty(tempRatesFilteredList)) {
-        parameters.ratesList = tempRatesFilteredList
+    List ratesList = []
+    if (tempRatesFilteredList) {
+        ratesList = tempRatesFilteredList
     }
     Map result = success()
-    result.filteredRatesList = parameters.ratesList
+    result.filteredRatesList = ratesList
     return result
 }
