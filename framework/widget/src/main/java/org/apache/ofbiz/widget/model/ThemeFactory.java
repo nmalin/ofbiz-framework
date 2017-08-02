@@ -123,6 +123,7 @@ public class ThemeFactory {
         if (theme == null) {
             theme = (Theme) request.getAttribute("theme");
         }
+        if (theme != null) return theme;
 
         String visualThemeId = null;
         //resolve on user pref
@@ -130,12 +131,9 @@ public class ThemeFactory {
         GenericValue userLogin = (GenericValue) session.getAttribute("userLogin");
         if (userLogin != null && dispatcher != null) {
             try {
-                Map<String, Object> userPreferencesResult = dispatcher.runSync("getUserPreferenceGroup",
-                        UtilMisc.toMap("userPrefGroupTypeId", "GLOBAL_PREFERENCES", "userLogin", userLogin));
-                Map<String, Object> userPreferences = (Map<String, Object>) userPreferencesResult.get("userPrefMap");
-                if (userPreferences.containsKey("VISUAL_THEME")) {
-                    visualThemeId = (String) userPreferences.get("VISUAL_THEME");
-                }
+                Map<String, Object> userPreferencesResult = dispatcher.runSync("getUserPreference",
+                        UtilMisc.toMap("userLogin", userLogin, "userPrefTypeId", "VISUAL_THEME"));
+                visualThemeId = (String) userPreferencesResult.get("userPrefValue");
             } catch (GenericServiceException e) {
                 Debug.logError("Impossible to resolve the theme from user prefrence for " + userLogin.get("userLoginId"), module);
             }
