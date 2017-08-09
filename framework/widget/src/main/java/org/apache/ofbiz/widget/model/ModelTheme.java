@@ -299,7 +299,7 @@ public class ModelTheme implements Serializable {
 
     public String getType(String name) {
         ModelTemplate modelTemplate = modelTemplateMap.get(name);
-        if (modelTemplate != null) return modelTemplate.getEncoder();
+        if (modelTemplate != null) return modelTemplate.getType();
         return null;
     }
     public String getEncoder(String name) {
@@ -415,6 +415,7 @@ public class ModelTheme implements Serializable {
         public String getEncoder() {
             return encoder;
         }
+        public String getType() { return type; }
         public String getCompress() {
             return compress;
         }
