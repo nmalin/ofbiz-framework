@@ -584,6 +584,10 @@ public class LoginWorker {
         }
         session.setAttribute("javaScriptEnabled", Boolean.valueOf("Y".equals(javaScriptEnabled)));
 
+        //init theme from user preference
+        UtilHttp.setTheme(session, null);
+        UtilHttp.setTheme(session, ThemeFactory.resolveTheme(request));
+
         ModelEntity modelUserLogin = userLogin.getModelEntity();
         if (modelUserLogin.isField("partyId")) {
             // if partyId is a field, then we should have these relations defined

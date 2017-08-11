@@ -123,9 +123,6 @@ public class ThemeFactory {
         //search on request only if a userLogin is present on session (otherwise this implied that the user isn't identify so wait
         if (userLogin != null) {
             Theme theme = (Theme) session.getAttribute("theme");
-            if (theme == null) {
-                theme = (Theme) request.getAttribute("theme");
-            }
             if (theme != null) return theme;
 
             //resolve on user pref
