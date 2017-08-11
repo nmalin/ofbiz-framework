@@ -737,7 +737,6 @@ public final class UtilHttp {
         return ThemeFactory.resolveTheme(request);
     }
     public static void setTheme(HttpServletRequest request, Theme theme) {
-        request.setAttribute(SESSION_KEY_THEME, theme);
         setTheme(request.getSession(), theme);
     }
     public static void setTheme(HttpSession session, Theme theme) {
