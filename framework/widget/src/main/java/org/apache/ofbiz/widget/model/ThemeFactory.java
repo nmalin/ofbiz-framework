@@ -33,6 +33,7 @@ import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.FileUtil;
 import org.apache.ofbiz.base.util.UtilMisc;
 import org.apache.ofbiz.base.util.UtilProperties;
+import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.apache.ofbiz.base.util.cache.UtilCache;
 import org.apache.ofbiz.entity.GenericValue;
@@ -98,6 +99,8 @@ public class ThemeFactory {
                     String ofbizHome = System.getProperty("ofbiz.home");
                     try {
                         List<File> xmlThemes = FileUtil.findXmlFiles(ofbizHome, "themes", "theme", "widget-theme.xsd");
+                        List<File> xmlPluginThemes = FileUtil.findXmlFiles(ofbizHome, "plugins", "theme", "widget-theme.xsd");
+                        if (UtilValidate.isNotEmpty(xmlPluginThemes)) xmlThemes.addAll(xmlPluginThemes);
                         for (File xmlTheme : xmlThemes) {
                             modelTheme = getModelThemeFromLocation(xmlTheme.toURI().toURL().toString());
                             if (modelTheme != null) {
