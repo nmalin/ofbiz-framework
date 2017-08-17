@@ -119,8 +119,13 @@ This block define where OFBiz can found all official screen define in framework/
         </general-screen>
     </common-screens>
 ```
-
+Screens are separate on three type :
+* structural-decorator : contains all decorator that organise all the screen structure
+* embed-decorator : decorator use only on sub screen
+* general-screen : list all generic inter application screen
 # The common Theme
+This is the root theme that contains all information to ensure a good functional for OFBiz.
+Currently it keep all old theme system for backward compatibility with ftl template managed by the entity **VisualThemeResource**
 # Create your own theme
 ## extends common-theme
 ## create from scratch
