@@ -123,9 +123,72 @@ Screens are separate on three type :
 * structural-decorator : contains all decorator that organise all the screen structure
 * embed-decorator : decorator use only on sub screen
 * general-screen : list all generic inter application screen
-# The common Theme
+# The common-theme
 This is the root theme that contains all information to ensure a good functional for OFBiz.
 Currently it keep all old theme system for backward compatibility with ftl template managed by the entity **VisualThemeResource**
 # Create your own theme
+As a theme is a component, you can create a new theme like a plugin. You can see more information on this subject [on the ofbiz README](https://github.com/apache/ofbiz-framework/blame/trunk/README.md#L584)
+After create run component, you can add the two minimal information :
+* Theme.xml file in **plugins/my-theme/widget/** with mininal trame :
+```xml
+<theme name="my-theme"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
+    <visual-themes>
+        <visual-theme id="MY_THEME"/>
+    </visual-themes>
+</theme>
+```
+* your data file to add your visual theme in **plugins/my-theme/data/**
+```xml
+<entity-engine-xml>
+    <VisualTheme visualThemeId="MY_THEME" visualThemeSetId="BACKOFFICE" description="My theme"/>
+</entity-engine-xml>
+```
 ## extends common-theme
+This is a first step to understand how the theme system work. With your new theme, you can try to surchage different elements.
+To start, extends the common-theme :
+```xml
+<theme name="my-theme"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
+    <visual-themes>
+        <visual-theme id="MY_THEME"/>
+    </visual-themes>
+    <extends location="component://common-theme/widget/Theme.xml"/>
+</theme>
+```
+Now your theme would be operational but without particularity.
+
+You can surcharge a ftl macro, to do this create your own ftl macro file in **plugins/my-theme/templates/macro/HtmlFormMacroLibrary.ftl** with
+
+```ftl
+<#include "component://common-theme/template/macro/HtmlFormMacroLibrary.ftl"/>
+
+<#macro renderDisplayField type imageLocation idName description title class alert inPlaceEditorUrl="" inPlaceEditorParams="">
+    <#if description?has_content>
+    *###*${description?replace("\n", "<br />")}**<#t/>
+    <#else>
+        *#&nbsp;#*<#t/>
+    </#if>
+</#macro>
+```
+now indicate to your theme that you want use this library
+```xml
+<theme name="my-theme"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
+    <visual-themes>
+        <visual-theme id="MY_THEME"/>
+    </visual-themes>
+    <extends location="component://common-theme/widget/Theme.xml"/>
+    <templates>
+        <template name="screen" type="html" content-type="UTF-8" encoding="none" encoder="html" compress="false">
+            <template-file widget="form" location="component://my-theme/template/macro/HtmlFormMacroLibrary.ftl"/>
+        </template>
+    </templates>
+</theme>
+```
+and check the result when you select your theme. Ok ok the result isn't really interesting but it's to understand how it works.
+
 ## create from scratch
