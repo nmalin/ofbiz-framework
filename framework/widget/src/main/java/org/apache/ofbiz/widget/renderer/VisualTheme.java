@@ -25,6 +25,9 @@ import org.apache.ofbiz.base.util.UtilXml;
 import org.apache.ofbiz.widget.model.ModelTheme;
 import org.w3c.dom.Element;
 
+/**
+ * Widget Theme Library - VisualTheme class
+ */
 public final class VisualTheme {
 
     public static final String module = VisualTheme.class.getName();
