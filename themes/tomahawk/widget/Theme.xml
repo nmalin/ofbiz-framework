@@ -29,14 +29,17 @@ under the License.
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
     <theme-properties>
-        <property name="VT_HDR_JAVASCRIPT[+0]" value="/tomahawk/js/dropdown.js"/>
-        <property name="VT_STYLESHEET[+0]" value="/tomahawk/css/style.css"/>
-        <property name="VT_HELPSTYLESHEET[]" value="/tomahawk/css/help.css"/>
-        <property name="VT_DOCBOOKSTYLESHEET[]" value="/tomahawk/webapp/tomahawk/css/docbook.css"/>
+        <!--template location-->
         <property name="VT_HDR_TMPLT_LOC" value="component://tomahawk/template/Header.ftl"/>
         <property name="VT_FTR_TMPLT_LOC" value="component://tomahawk/template/Footer.ftl"/>
         <property name="VT_NAV_OPEN_TMPLT" value="component://tomahawk/template/AppBarOpen.ftl"/>
         <property name="VT_NAV_CLOSE_TMPLT" value="component://tomahawk/template/AppBarClose.ftl"/>
         <property name="VT_MSG_TMPLT_LOC" value="component://common-theme/template/includes/Messages.ftl"/>
+        <!--javascript lib-->
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/tomahawk/js/dropdown.js"/>
+        <!--Css style-->
+        <property name="VT_STYLESHEET[+0]" value="/tomahawk/css/style.css"/>
+        <property name="VT_HELPSTYLESHEET[]" value="/tomahawk/css/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET[]" value="/tomahawk/webapp/tomahawk/css/docbook.css"/>
     </theme-properties>
 </theme>

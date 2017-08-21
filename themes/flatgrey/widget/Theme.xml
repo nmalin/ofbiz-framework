@@ -30,15 +30,16 @@ under the License.
     <extends location="component://common-theme/widget/Theme.xml"/>
 
     <theme-properties>
-        <property name="VT_NAME" value="FLAT_GREY" />
-        <property name="VT_SCREENSHOT" value="/flatgrey/screenshot.jpg"/>
+        <!--template location-->
+        <property name="VT_HDR_IMAGE_URL" value="/flatgrey/images/ofbiz_logo.gif"/>
+        <!--javascript lib-->
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/flatgrey/js/application.js"/>
+        <!--Css style-->
         <property name="VT_STYLESHEET[+0]" value="/flatgrey/style.css"/>
         <property name="VT_STYLESHEET[+0]" value="/flatgrey/javascript.css"/>
         <property name="VT_HELPSTYLESHEET[]" value="/flatgrey/help.css"/>
         <property name="VT_DOCBOOKSTYLESHEET[]" value="/flatgrey/webapp/flatgrey/docbook.css"/>
         <property name="VT_RTL_STYLESHEET[]" value="/flatgrey/stylertl.css"/>
-        <property name="VT_HDR_IMAGE_URL" value="/flatgrey/images/ofbiz_logo.gif"/>
-        <property name="VT_HDR_JAVASCRIPT[+0]" value="/flatgrey/js/application.js"/>
     </theme-properties>
 
 </theme>

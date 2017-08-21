@@ -30,10 +30,13 @@ under the License.
     <extends location="component://common-theme/widget/Theme.xml"/>
 
     <theme-properties>
+        <!--javascript lib-->
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/bluelight/dropdown.js" sequenceId="30"/>
+        <!--Css style-->
         <property name="VT_STYLESHEET[+0]" value="/bluelight/style.css"/>
         <property name="VT_HELPSTYLESHEET[]" value="/bluelight/help.css"/>
         <property name="VT_DOCBOOKSTYLESHEET[]" value="/bluelight/webapp/bluelight/docbook.css"/>
+        <!--template location-->
         <property name="VT_HDR_TMPLT_LOC" value="component://bluelight/template/Header.ftl"/>
         <property name="VT_FTR_TMPLT_LOC" value="component://bluelight/template/Footer.ftl"/>
         <property name="VT_NAV_OPEN_TMPLT" value="component://bluelight/template/AppBarOpen.ftl"/>

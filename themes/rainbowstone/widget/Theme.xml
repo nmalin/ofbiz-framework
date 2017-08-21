@@ -37,14 +37,7 @@ under the License.
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
     <theme-properties>
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/style.css"/>
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/flag-icon.min.css"/>
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/javascript.css"/>
-        <property name="VT_RTL_STYLESHEET[]" value="/rainbowstone/stylertl.css"/>
-        <property name="VT_HELPSTYLESHEET[]" value="/rainbowstone/help.css"/>
-        <property name="VT_DOCBOOKSTYLESHEET[]" value="/rainbowstone/webapp/rainbowstone/docbook.css"/>
-        <property name="VT_HDR_JAVASCRIPT[+0]" value="/rainbowstone/js/less.min.js"/>
-        <property name="VT_FTR_JAVASCRIPT[+0]" value="/rainbowstone/js/rainbowstone.js"/>
+        <!--template location-->
         <property name="VT_HDR_IMAGE_URL" value="/rainbowstone/images/ofbiz_logo.gif"/>
         <property name="VT_HDR_TMPLT_LOC" value="component://rainbowstone/template/includes/Header.ftl"/>
         <property name="VT_FTR_TMPLT_LOC" value="component://rainbowstone/template/includes/Footer.ftl"/>
@@ -53,6 +46,16 @@ under the License.
         <property name="VT_FGPWD_TMPLT_LOC" value="component://rainbowstone/template/ForgotPassword.ftl"/>
         <property name="VT_GSQUE_TMPLT_LOC" value="component://rainbowstone/template/GetSecurityQuestion.ftl"/>
         <property name="VT_LOGIN_TMPLT_LOC" value="component://rainbowstone/template/Login.ftl"/>
+        <!--javascript lib-->
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/rainbowstone/js/less.min.js"/>
+        <property name="VT_FTR_JAVASCRIPT[+0]" value="/rainbowstone/js/rainbowstone.js"/>
+        <!--Css style-->
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/style.css"/>
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/flag-icon.min.css"/>
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/javascript.css"/>
+        <property name="VT_RTL_STYLESHEET[]" value="/rainbowstone/stylertl.css"/>
+        <property name="VT_HELPSTYLESHEET[]" value="/rainbowstone/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET[]" value="/rainbowstone/webapp/rainbowstone/docbook.css"/>
     </theme-properties>
 
     <templates>

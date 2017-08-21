@@ -48,11 +48,13 @@ under the License.
         <property name="jgrowl.width" value="800" type="Integer"/>
         <property name="jgrowl.height" value="" type="Integer"/>
         <property name="jgrowl.speed" value="100" type="Integer"/>
+        <!--template location-->
         <property name="VT_SHORTCUT_ICON" value="/images/ofbiz.ico"/>
         <property name="VT_HDR_TMPLT_LOC" value="component://flatgrey/template/Header.ftl"/>
         <property name="VT_FTR_TMPLT_LOC" value="component://flatgrey/template/Footer.ftl"/>
         <property name="VT_NAV_TMPLT_LOC" value="component://flatgrey/template/AppBar.ftl"/>
         <property name="VT_MSG_TMPLT_LOC" value="component://common-theme/template/includes/Messages.ftl"/>
+        <!--javascript lib-->
         <property name="VT_HDR_JAVASCRIPT[]" value="/images/jquery/jquery-1.11.0.min.js"/>
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.js"/>
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon.min-1.4.3.js"/>
@@ -69,6 +71,7 @@ under the License.
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/selectMultipleRelatedValues.js"/>
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/util.js"/>
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/date/FromThruDateCheck.js"/>
+        <!--Css style-->
         <property name="VT_STYLESHEET[]" value="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.css"/>
     </theme-properties>
 
