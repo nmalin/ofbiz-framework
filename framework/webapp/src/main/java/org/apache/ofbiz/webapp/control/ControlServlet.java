@@ -49,9 +49,7 @@ import org.apache.ofbiz.webapp.stats.ServerHitBin;
 import org.apache.ofbiz.webapp.stats.VisitHandler;
 
 import freemarker.ext.servlet.ServletContextHashModel;
-import org.apache.ofbiz.widget.model.ModelTheme;
-import org.apache.ofbiz.widget.model.ThemeFactory;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 
 /**
  * ControlServlet.java - Master servlet for the web application.
@@ -181,9 +179,9 @@ public class ControlServlet extends HttpServlet {
         }
         request.setAttribute("security", security);
 
-        Theme theme = UtilHttp.getTheme(request);
-        if (theme != null) {
-            UtilHttp.setTheme(request, theme);
+        VisualTheme visualTheme = UtilHttp.getVisualTheme(request);
+        if (visualTheme != null) {
+            UtilHttp.setVisualTheme(request, visualTheme);
         }
         request.setAttribute("_REQUEST_HANDLER_", requestHandler);
         

@@ -500,12 +500,6 @@ public class LoginWorker {
             }
             try {
                 result = dispatcher.runSync("setUserPreference", UtilMisc.toMap("userPrefTypeId", "javaScriptEnabled", "userPrefGroupTypeId", "GLOBAL_PREFERENCES", "userPrefValue", javaScriptEnabled, "userLogin", userLogin));
-                //get theme
-                result = dispatcher.runSync("getUserPreference", UtilMisc.toMap("userLogin", userLogin, "userPrefTypeId", "VISUAL_THEME"));
-                String visualThemeId = (String) result.get("userPrefValue");
-                if ( visualThemeId != null) {
-                    session.setAttribute("theme", ThemeFactory.getThemeFromId(visualThemeId));
-                }
             } catch (GenericServiceException e) {
                 Debug.logError(e, "Error setting user preference", module);
             }
@@ -584,9 +578,9 @@ public class LoginWorker {
         }
         session.setAttribute("javaScriptEnabled", Boolean.valueOf("Y".equals(javaScriptEnabled)));
 
-        //init theme from user preference
-        UtilHttp.setTheme(session, null);
-        UtilHttp.setTheme(session, ThemeFactory.resolveTheme(request));
+        //init theme from user preference, clean the current visualTheme value in session and restart the resolution
+        UtilHttp.setVisualTheme(session, null);
+        UtilHttp.setVisualTheme(session, ThemeFactory.resolveVisualTheme(request));
 
         ModelEntity modelUserLogin = userLogin.getModelEntity();
         if (modelUserLogin.isField("partyId")) {

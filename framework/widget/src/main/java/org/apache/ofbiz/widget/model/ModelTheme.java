@@ -24,11 +24,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.ObjectType;
+import org.apache.ofbiz.base.util.UtilMisc;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.UtilXml;
+import org.apache.ofbiz.base.util.collections.FlexibleMapAccessor;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 import org.w3c.dom.Element;
 
 /**
@@ -47,7 +51,7 @@ public class ModelTheme implements Serializable {
     private final ModelTheme originTheme;
     //generic properties
     private final String name;
-    private final List<String> visualThemeIds;
+    private final Map<String, VisualTheme> visualThemes;
     private final Integer defaultViewSize;
 
     // Autocomplete configuration
@@ -80,13 +84,48 @@ public class ModelTheme implements Serializable {
     public ModelTheme(Element themeElement) {
         this.name = themeElement.getAttribute("name");
         ModelTheme initOriginTheme = null;
-        List<String> initVisualThemeIds = new ArrayList<>();
+        Map<String, VisualTheme> initVisualThemes = new HashMap<>();
         Map<String, Object> initWidgetPropertiesMap = new HashMap<>();
-        Map<String, Object> initThemePropertiesMap = null;
-        Map<String, ModelTemplate> initModelTemplateMap = null;
-        Map<String, String> initModelCommonScreensMap = null;
+        Map<String, Object> initThemePropertiesMap = new HashMap<>();
+        Map<String, ModelTemplate> initModelTemplateMap = new HashMap<>();
+        Map<String, String> initModelCommonScreensMap = new HashMap<>();
 
-        //first collect value from XML
+        // first resolve value from the origin theme
+        Element originThemeElement = UtilXml.firstChildElement(themeElement, "extends");
+        if (originThemeElement != null) {
+            initOriginTheme = ThemeFactory.getModelThemeFromLocation(originThemeElement.getAttribute("location"));
+        }
+        this.originTheme = initOriginTheme;
+
+        if (this.originTheme != null) {
+            initWidgetPropertiesMap.put("defaultViewSize", originTheme.defaultViewSize);
+            initWidgetPropertiesMap.put("autocompleterDefaultViewSize", originTheme.autocompleterDefaultViewSize);
+            initWidgetPropertiesMap.put("autocompleterDefaultMinLength", originTheme.autocompleterDefaultMinLength);
+            initWidgetPropertiesMap.put("autocompleterDefaultDelay", originTheme.autocompleterDefaultDelay);
+            initWidgetPropertiesMap.put("autocompleterDisplayReturnField", originTheme.autocompleterDisplayReturnField);
+            initWidgetPropertiesMap.put("lookupPosition", originTheme.lookupPosition);
+            initWidgetPropertiesMap.put("lookupWidth", originTheme.lookupWidth);
+            initWidgetPropertiesMap.put("lookupHeight", originTheme.lookupHeight);
+            initWidgetPropertiesMap.put("linkDefaultLayeredModalWidth", originTheme.linkDefaultLayeredModalWidth);
+            initWidgetPropertiesMap.put("linkDefaultLayeredModalHeight", originTheme.linkDefaultLayeredModalHeight);
+
+            // resolve all decicate properties from origin and sucharge by the present dedicate properties
+            if (originTheme.themePropertiesMap != null) {
+                for (String key : originTheme.themePropertiesMap.keySet()) {
+                    initThemePropertiesMap.put(key, SerializationUtils.clone((Serializable)originTheme.themePropertiesMap.get(key)));
+                };
+            }
+
+            // Add modelTemplate present on origin and not on this
+            if (originTheme.modelTemplateMap != null) {
+                initModelTemplateMap = UtilMisc.makeMapWritable(originTheme.modelTemplateMap);
+            }
+            if (originTheme.modelCommonScreensMap != null) {
+                initModelCommonScreensMap = UtilMisc.makeMapWritable(originTheme.modelCommonScreensMap);
+            }
+        }
+
+        //second collect value from XML and surcharge
         for (Element childElement : UtilXml.childElementList(themeElement)) {
             switch (childElement.getNodeName()) {
                 case "widget-properties":
@@ -94,25 +133,26 @@ public class ModelTheme implements Serializable {
                     break;
                 case "visual-themes":
                     for (Element visualTheme : UtilXml.childElementList(childElement)) {
-                        initVisualThemeIds.add(visualTheme.getAttribute("id"));
+                        initVisualThemes.put(visualTheme.getAttribute("id"), new VisualTheme(this, visualTheme));
                     }
                 case "theme-properties":
-                    initThemePropertiesMap = new HashMap<>();
                     for (Element property : UtilXml.childElementList(childElement)) {
                         addThemeProperty(initThemePropertiesMap, property);
                     }
                     break;
                 case "templates":
-                    initModelTemplateMap = new HashMap<>();
                     for (Element template : UtilXml.childElementList(childElement)) {
-                        initModelTemplateMap.put(template.getAttribute("name"), new ModelTemplate(template));
+                        String modelTemplateName = template.getAttribute("name");
+                        if (initModelTemplateMap.containsKey(modelTemplateName)) {
+                            ModelTemplate surchargeModelTemplate = new ModelTemplate(template);
+                            ModelTemplate originModelTemplate = initModelTemplateMap.get(modelTemplateName);
+                            initModelTemplateMap.put(modelTemplateName, new ModelTemplate(surchargeModelTemplate, originModelTemplate));
+                        } else {
+                            initModelTemplateMap.put(modelTemplateName, new ModelTemplate(template));
+                        }
                     }
                     break;
-                case "extends":
-                    initOriginTheme = ThemeFactory.getModelThemeFromLocation(childElement.getAttribute("location"));
-                    break;
                 case "common-screens":
-                    initModelCommonScreensMap = new HashMap<>();
                     for (Element screenPurpose : UtilXml.childElementList(childElement)) {
                         String defaultLocation = screenPurpose.getAttribute("default-location");
                         for (Element screen : UtilXml.childElementList(screenPurpose)) {
@@ -123,23 +163,11 @@ public class ModelTheme implements Serializable {
                                 Debug.logWarning("We can resolve the screen location " + name + " in the theme " + this.name + " so no added it", module);
                                 continue;
                             }
-                            if (initModelCommonScreensMap.containsKey(name)) {
-                                Debug.logWarning("We detect a second screen " + name + " in the theme " + this.name + " so no added it a second time", module);
-                                continue;
-                            }
                             initModelCommonScreensMap.put(name, location);
                         }
                     }
                     break;
             }
-        }
-
-        // resolve value from the origin theme
-        this.originTheme = (initOriginTheme != null) ? initOriginTheme : null; 
-        if (initOriginTheme != null) {
-            if (initModelTemplateMap == null) initModelTemplateMap = new HashMap<>();
-            if (initModelCommonScreensMap == null) initModelCommonScreensMap = new HashMap<>();
-            extendFromOrigin(initWidgetPropertiesMap, initThemePropertiesMap, initModelTemplateMap, initModelCommonScreensMap);
         }
 
         // now store all values on final variable
@@ -153,10 +181,10 @@ public class ModelTheme implements Serializable {
         this.lookupHeight = (Integer) initWidgetPropertiesMap.get("lookupHeight");
         this.linkDefaultLayeredModalWidth = (Integer) initWidgetPropertiesMap.get("linkDefaultLayeredModalWidth");
         this.linkDefaultLayeredModalHeight = (Integer) initWidgetPropertiesMap.get("linkDefaultLayeredModalHeight");
-        this.visualThemeIds = Collections.unmodifiableList(initVisualThemeIds);
-        this.themePropertiesMap = (initThemePropertiesMap != null ? Collections.unmodifiableMap(initThemePropertiesMap) : null);
-        this.modelTemplateMap = (initModelTemplateMap != null ? Collections.unmodifiableMap(initModelTemplateMap) : null);
-        this.modelCommonScreensMap = (initModelCommonScreensMap != null ? Collections.unmodifiableMap(initModelCommonScreensMap) : null);
+        this.visualThemes = Collections.unmodifiableMap(initVisualThemes);
+        this.themePropertiesMap = Collections.unmodifiableMap(initThemePropertiesMap);
+        this.modelTemplateMap = Collections.unmodifiableMap(initModelTemplateMap);
+        this.modelCommonScreensMap = Collections.unmodifiableMap(initModelCommonScreensMap);
     }
 
     public String getName() {
@@ -164,12 +192,12 @@ public class ModelTheme implements Serializable {
     }
 
     public List<String> getVisualThemeIds() {
-        if (visualThemeIds == null) return new ArrayList<>();
-        return visualThemeIds;
+        return new ArrayList<>(visualThemes.keySet());
     }
     public boolean hasVisualThemeId(String visualThemeId) {
-        return visualThemeIds.contains(visualThemeId);
+        return visualThemes.containsKey(visualThemeId);
     }
+    public VisualTheme getVisualTheme(String visualThemeId) { return visualThemes.get(visualThemeId); }
 
     public Integer getDefaultViewSize() {
         return defaultViewSize;
@@ -208,50 +236,6 @@ public class ModelTheme implements Serializable {
     }
 
 
-    /**
-     * */
-    private void extendFromOrigin(Map<String, Object> initWidgetPropertiesMap, Map<String, Object> initThemePropertiesMap,
-                                  Map<String, ModelTemplate> initModelTemplateMap, Map<String, String> initModelCommonScreensMap) {
-        if (initWidgetPropertiesMap.get("defaultViewSize") == null) initWidgetPropertiesMap.put("defaultViewSize", originTheme.defaultViewSize);
-        if (initWidgetPropertiesMap.get("autocompleterDefaultViewSize")  == null) initWidgetPropertiesMap.put("autocompleterDefaultViewSize", originTheme.autocompleterDefaultViewSize);
-        if (initWidgetPropertiesMap.get("autocompleterDefaultMinLength")  == null) initWidgetPropertiesMap.put("autocompleterDefaultMinLength", originTheme.autocompleterDefaultMinLength);
-        if (initWidgetPropertiesMap.get("autocompleterDefaultDelay")  == null) initWidgetPropertiesMap.put("autocompleterDefaultDelay", originTheme.autocompleterDefaultDelay);
-        if (initWidgetPropertiesMap.get("autocompleterDisplayReturnField") == null) initWidgetPropertiesMap.put("autocompleterDisplayReturnField", originTheme.autocompleterDisplayReturnField);
-        if (initWidgetPropertiesMap.get("lookupPosition") == null) initWidgetPropertiesMap.put("lookupPosition", originTheme.lookupPosition);
-        if (initWidgetPropertiesMap.get("lookupWidth") == null) initWidgetPropertiesMap.put("lookupWidth", originTheme.lookupWidth);
-        if (initWidgetPropertiesMap.get("lookupHeight") == null) initWidgetPropertiesMap.put("lookupHeight", originTheme.lookupHeight);
-        if (initWidgetPropertiesMap.get("linkDefaultLayeredModalWidth") == null) initWidgetPropertiesMap.put("linkDefaultLayeredModalWidth", originTheme.linkDefaultLayeredModalWidth);
-        if (initWidgetPropertiesMap.get("linkDefaultLayeredModalHeight") == null) initWidgetPropertiesMap.put("linkDefaultLayeredModalHeight", originTheme.linkDefaultLayeredModalHeight);
-
-        // resolve all decicate properties from origin and sucharge by the present dedicate properties
-        if (originTheme.themePropertiesMap != null) {
-            Map<String, Object> themePropertiesTmp = new HashMap<>(originTheme.themePropertiesMap);
-            if (initThemePropertiesMap != null) themePropertiesTmp.putAll(initThemePropertiesMap);
-            initThemePropertiesMap.clear();
-            initThemePropertiesMap.putAll(themePropertiesTmp);
-        }
-
-        // Add modelTemplate present on origin and not on this
-        if (originTheme.modelTemplateMap !=  null) {
-            if (initModelTemplateMap != null) {
-                for (String modelTemplateName : originTheme.modelTemplateMap.keySet()) {
-                    ModelTemplate originModelTemplate = originTheme.modelTemplateMap.get(modelTemplateName);
-                    ModelTemplate modelTemplate = initModelTemplateMap.get(modelTemplateName);
-                    modelTemplate = new ModelTemplate(modelTemplate, originModelTemplate);
-                    initModelTemplateMap.put(modelTemplateName, modelTemplate);
-                }
-            } else {
-                initModelTemplateMap = originTheme.modelTemplateMap;
-            }
-        }
-        if (originTheme.modelCommonScreensMap != null) {
-            Map<String, String> modelCommonScreensMapTmp = new HashMap<>(originTheme.modelCommonScreensMap);
-            modelCommonScreensMapTmp.putAll(initModelCommonScreensMap);
-            initModelCommonScreensMap.clear();
-            initModelCommonScreensMap.putAll(modelCommonScreensMapTmp);
-        }
-    }
-
     private void addWidgetProperties(Map<String, Object> initWidgetPropertiesMap, Element widgetProperties) {
         for (Element childElement : UtilXml.childElementList(widgetProperties)) {
             switch (childElement.getNodeName()) {
@@ -278,14 +262,14 @@ public class ModelTheme implements Serializable {
     }
 
     private void addThemeProperty(Map<String, Object> initThemePropertiesMap, Element property) {
-        String name = property.getAttribute("name");
-        String value = property.getAttribute(("value"));
+        FlexibleMapAccessor name = FlexibleMapAccessor.getInstance((String) property.getAttribute("name"));
+        String value = property.getAttribute("value");
         String type = property.getAttribute("type");
-        if (type == null || "String".equals(type) || "java.lang.String".equals(type)) {
-            initThemePropertiesMap.put(name, value);
+        if (UtilValidate.isEmpty(type) || type.endsWith("String")) {
+            name.put(initThemePropertiesMap, value);
         } else {
             try {
-                initThemePropertiesMap.put(name, ObjectType.simpleTypeConvert(value, type, null, null));
+                name.put(initThemePropertiesMap, ObjectType.simpleTypeConvert(value, type, null, null));
             } catch (GeneralException e) {
                 Debug.logError("Impossible to parse the value " + value + " to type " + type + " for the property " + name + " on theme " + this.name, module);
             }
@@ -295,6 +279,9 @@ public class ModelTheme implements Serializable {
         if (! themePropertiesMap.containsKey(propertyName)
                 || themePropertiesMap.get(propertyName) == null) return "";
         return themePropertiesMap.get(propertyName);
+    }
+    public Map<String, Object> getThemeResources() {
+        return themePropertiesMap;
     }
 
     public String getType(String name) {

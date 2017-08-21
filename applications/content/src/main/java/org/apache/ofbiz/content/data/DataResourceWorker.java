@@ -86,7 +86,7 @@ import org.apache.ofbiz.widget.model.ThemeFactory;
 import org.apache.ofbiz.widget.renderer.FormRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 import org.apache.ofbiz.widget.renderer.macro.MacroFormRenderer;
 import org.apache.ofbiz.widget.renderer.macro.MacroScreenRenderer;
 import org.apache.tika.Tika;
@@ -626,8 +626,8 @@ public class DataResourceWorker  implements org.apache.ofbiz.widget.content.Data
         }
 
         //FIXME propage correctly the theme
-        Theme theme = ThemeFactory.getThemeFromId("COMMON");
-        ModelTheme modelTheme = theme.getModelTheme();
+        VisualTheme visualTheme = ThemeFactory.getVisualThemeFromId("COMMON");
+        ModelTheme modelTheme = visualTheme.getModelTheme();
 
         // if the target mimeTypeId is not a text type, throw an exception
         if (!targetMimeTypeId.startsWith("text/")) {

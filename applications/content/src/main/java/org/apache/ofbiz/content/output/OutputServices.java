@@ -64,7 +64,7 @@ import org.apache.ofbiz.service.ServiceUtil;
 import org.apache.ofbiz.webapp.view.ApacheFopWorker;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 import org.apache.ofbiz.widget.renderer.fo.FoFormRenderer;
 import org.apache.ofbiz.widget.renderer.macro.MacroScreenRenderer;
 
@@ -81,7 +81,7 @@ public class OutputServices {
 
     public static Map<String, Object> sendPrintFromScreen(DispatchContext dctx, Map<String, ? extends Object> serviceContext) {
         Locale locale = (Locale) serviceContext.get("locale");
-        Theme theme = (Theme) serviceContext.get("theme");
+        VisualTheme visualTheme = (VisualTheme) serviceContext.get("visualTheme");
         String screenLocation = (String) serviceContext.remove("screenLocation");
         Map<String, Object> screenContext = UtilGenerics.checkMap(serviceContext.remove("screenContext"));
         String contentType = (String) serviceContext.remove("contentType");
@@ -105,8 +105,8 @@ public class OutputServices {
 
             Writer writer = new StringWriter();
             // substitute the freemarker variables...
-            ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(theme.getModelTheme().getType("screenfop"),
-                            theme.getModelTheme().getScreenRendererLocation("screenfop"));
+            ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(visualTheme.getModelTheme().getType("screenfop"),
+                            visualTheme.getModelTheme().getScreenRendererLocation("screenfop"));
 
             ScreenRenderer screensAtt = new ScreenRenderer(writer, screenContextTmp, foScreenStringRenderer);
             screensAtt.populateContextForService(dctx, screenContext);
@@ -196,7 +196,7 @@ public class OutputServices {
     public static Map<String, Object> createFileFromScreen(DispatchContext dctx, Map<String, ? extends Object> serviceContext) {
         Locale locale = (Locale) serviceContext.get("locale");
         Delegator delegator = dctx.getDelegator();
-        Theme theme = (Theme) serviceContext.get("theme");
+        VisualTheme visualTheme = (VisualTheme) serviceContext.get("visualTheme");
         String screenLocation = (String) serviceContext.remove("screenLocation");
         Map<String, Object> screenContext = UtilGenerics.checkMap(serviceContext.remove("screenContext"));
         String contentType = (String) serviceContext.remove("contentType");
@@ -217,8 +217,8 @@ public class OutputServices {
 
             Writer writer = new StringWriter();
             // substitute the freemarker variables...
-            ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(theme.getModelTheme().getType("screenfop"),
-                    theme.getModelTheme().getScreenRendererLocation("screenfop"));
+            ScreenStringRenderer foScreenStringRenderer = new MacroScreenRenderer(visualTheme.getModelTheme().getType("screenfop"),
+                    visualTheme.getModelTheme().getScreenRendererLocation("screenfop"));
             ScreenRenderer screensAtt = new ScreenRenderer(writer, screenContextTmp, foScreenStringRenderer);
             screensAtt.populateContextForService(dctx, screenContext);
             screenContextTmp.putAll(screenContext);

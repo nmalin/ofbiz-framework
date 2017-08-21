@@ -137,7 +137,7 @@ public final class ContextHelper {
     }
 
     public ModelTheme getTheme() {
-        return (ModelTheme) this.context.getAttribute("theme");
+        return (ModelTheme) this.context.getAttribute("visualTheme");
     }
 
     public Object getParameter(String key) {

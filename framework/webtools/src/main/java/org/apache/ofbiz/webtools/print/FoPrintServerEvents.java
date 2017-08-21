@@ -35,11 +35,10 @@ import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 import org.apache.ofbiz.widget.renderer.macro.MacroScreenRenderer;
 
 /**
@@ -88,7 +87,7 @@ public class FoPrintServerEvents {
 
     public static byte[] getXslFo(DispatchContext dctx, String screen, Map<String, Object> parameters) throws GeneralException {
         // run as the system user
-        Theme theme = (Theme) parameters.get("theme");
+        VisualTheme visualTheme = (VisualTheme) parameters.get("visualTheme");
         GenericValue system = null;
         try {
             system = dctx.getDelegator().findOne("UserLogin", true, "userLoginId", "system");
@@ -103,8 +102,8 @@ public class FoPrintServerEvents {
         // render and obtain the XSL-FO
         Writer writer = new StringWriter();
         try {
-            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(theme.getModelTheme().getType("screen"),
-                    theme.getModelTheme().getScreenRendererLocation("screen"));
+            ScreenStringRenderer screenStringRenderer = new MacroScreenRenderer(visualTheme.getModelTheme().getType("screen"),
+                    visualTheme.getModelTheme().getScreenRendererLocation("screen"));
             ScreenRenderer screens = new ScreenRenderer(writer, null, screenStringRenderer);
             screens.populateContextForService(dctx, parameters);
             screens.render(screen);

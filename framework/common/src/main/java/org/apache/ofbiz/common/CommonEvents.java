@@ -59,7 +59,7 @@ import org.apache.ofbiz.entity.util.EntityQuery;
 import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.security.Security;
 import org.apache.ofbiz.widget.model.ThemeFactory;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 
 /**
  * Common Services
@@ -255,9 +255,9 @@ public class CommonEvents {
     public static String setSessionTheme(HttpServletRequest request, HttpServletResponse response) {
         String visualThemeId = request.getParameter("userPrefValue");
         if (UtilValidate.isNotEmpty(visualThemeId)) {
-            Theme theme = ThemeFactory.getThemeFromId(visualThemeId);
-            if (theme != null) {
-                UtilHttp.setTheme(request, theme);
+            VisualTheme visualTheme = ThemeFactory.getVisualThemeFromId(visualThemeId);
+            if (visualTheme != null) {
+                UtilHttp.setVisualTheme(request, visualTheme);
             }
         }
         return "success";

@@ -58,7 +58,6 @@ import org.apache.ofbiz.widget.cache.GenericWidgetOutput;
 import org.apache.ofbiz.widget.cache.ScreenCache;
 import org.apache.ofbiz.widget.cache.WidgetContextCacheKey;
 import org.apache.ofbiz.widget.model.ModelScreen;
-import org.apache.ofbiz.widget.model.ModelTheme;
 import org.apache.ofbiz.widget.model.ScreenFactory;
 import org.xml.sax.SAXException;
 
@@ -216,9 +215,9 @@ public class ScreenRenderer {
 
         // ========== setup values that are specific to OFBiz webapps
 
-        Theme theme = UtilHttp.getTheme(request);
-        context.put("theme", theme);
-        context.put("modelTheme", theme.getModelTheme());
+        VisualTheme visualTheme = UtilHttp.getVisualTheme(request);
+        context.put("visualTheme", visualTheme);
+        context.put("modelTheme", visualTheme.getModelTheme());
         context.put("request", request);
         context.put("response", response);
         context.put("session", session);

@@ -57,7 +57,7 @@ import org.apache.ofbiz.webapp.control.ConfigXMLReader;
 import org.apache.ofbiz.webapp.control.ConfigXMLReader.Event;
 import org.apache.ofbiz.webapp.control.ConfigXMLReader.RequestMap;
 import org.apache.ofbiz.webapp.control.ControlActivationEventListener;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 
 /**
  * ServiceEventHandler - Service Event Handler
@@ -109,7 +109,7 @@ public class ServiceEventHandler implements EventHandler {
         // some needed info for when running the service
         Locale locale = UtilHttp.getLocale(request);
         TimeZone timeZone = UtilHttp.getTimeZone(request);
-        Theme theme = UtilHttp.getTheme(request);
+        VisualTheme visualTheme = UtilHttp.getVisualTheme(request);
         HttpSession session = request.getSession();
         GenericValue userLogin = (GenericValue) session.getAttribute("userLogin");
 
@@ -248,7 +248,7 @@ public class ServiceEventHandler implements EventHandler {
             // don't include timeZone, that is also taken care of below
             if ("timeZone".equals(name)) continue;
             // don't include theme, that is also taken care of below
-            if ("theme".equals(name)) continue;
+            if ("visualTheme".equals(name)) continue;
 
             Object value = null;
             if (UtilValidate.isNotEmpty(modelParam.stringMapPrefix)) {
@@ -337,8 +337,8 @@ public class ServiceEventHandler implements EventHandler {
         }
 
         // include the Theme object
-        if (theme != null) {
-            serviceContext.put("theme", theme);
+        if (visualTheme != null) {
+            serviceContext.put("visualTheme", visualTheme);
         }
 
         // invoke the service
