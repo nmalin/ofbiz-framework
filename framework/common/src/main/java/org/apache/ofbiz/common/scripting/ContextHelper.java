@@ -41,7 +41,7 @@ import org.apache.ofbiz.entity.GenericValue;
 import org.apache.ofbiz.security.Security;
 import org.apache.ofbiz.service.LocalDispatcher;
 import org.apache.ofbiz.service.ModelService;
-import org.apache.ofbiz.widget.model.ModelTheme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 
 /**
  * A set of <code>ScriptContext</code> convenience methods for scripting engines.
@@ -136,8 +136,8 @@ public final class ContextHelper {
         return (Locale) this.context.getAttribute("locale");
     }
 
-    public ModelTheme getTheme() {
-        return (ModelTheme) this.context.getAttribute("visualTheme");
+    public VisualTheme getVisualTheme() {
+        return (VisualTheme) this.context.getAttribute("visualTheme");
     }
 
     public Object getParameter(String key) {
