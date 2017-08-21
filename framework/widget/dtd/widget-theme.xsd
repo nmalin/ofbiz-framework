@@ -42,6 +42,17 @@ under the License.
     <xs:element name="visual-theme">
         <xs:complexType>
             <xs:attribute type="xs:string" name="id" use="required" />
+            <xs:attribute type="xs:string" name="display-name" use="required" />
+            <xs:sequence>
+                <xs:element minOccurs="0" maxOccurs="1" ref="description" />
+                <xs:element minOccurs="0" maxOccurs="unbounded" ref="screenshot" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="description"/>
+    <xs:element name="screenshot">
+        <xs:complexType>
+            <xs:attribute type="xs:string" name="location" use="required" />
         </xs:complexType>
     </xs:element>
     <xs:element name="extends">
