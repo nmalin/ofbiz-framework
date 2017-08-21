@@ -22,12 +22,9 @@ under the License.
         <xs:complexType>
             <xs:sequence>
                 <xs:element maxOccurs="1" ref="visual-themes"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="extend"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="default-view-size"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="autocompleter"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="lookup"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="layered-modal"/>
-                <xs:element minOccurs="0" maxOccurs="1" ref="properties"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="extends"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="widget-properties"/>
+                <xs:element minOccurs="0" maxOccurs="1" ref="theme-properties"/>
                 <xs:element minOccurs="0" maxOccurs="1" ref="templates"/>
             </xs:sequence>
         </xs:complexType>
@@ -41,12 +38,12 @@ under the License.
     </xs:element>
     <xs:element name="visual-theme">
         <xs:complexType>
-            <xs:attribute type="xs:string" name="id" use="required" />
-            <xs:attribute type="xs:string" name="display-name" use="required" />
             <xs:sequence>
                 <xs:element minOccurs="0" maxOccurs="1" ref="description" />
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="screenshot" />
             </xs:sequence>
+            <xs:attribute type="xs:string" name="id" use="required" />
+            <xs:attribute type="xs:string" name="display-name" use="required" />
         </xs:complexType>
     </xs:element>
     <xs:element name="description"/>
@@ -176,26 +173,26 @@ under the License.
     </xs:element>
     <xs:element name="root-decorator">
         <xs:complexType>
-            <xs:attribute type="xs:string" name="default-location" use="optional" />
             <xs:sequence>
                 <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
             </xs:sequence>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
         </xs:complexType>
     </xs:element>
     <xs:element name="subtype-decorator">
         <xs:complexType>
-            <xs:attribute type="xs:string" name="default-location" use="optional" />
             <xs:sequence>
                 <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
             </xs:sequence>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
         </xs:complexType>
     </xs:element>
     <xs:element name="generic-screen">
         <xs:complexType>
-            <xs:attribute type="xs:string" name="default-location" use="optional" />
             <xs:sequence>
                 <xs:element minOccurs="1" maxOccurs="unbounded" ref="screen" />
             </xs:sequence>
+            <xs:attribute type="xs:string" name="default-location" use="optional" />
         </xs:complexType>
     </xs:element>
     <xs:element name="screen">
