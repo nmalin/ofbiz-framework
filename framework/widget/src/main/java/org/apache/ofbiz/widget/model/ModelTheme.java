@@ -42,13 +42,6 @@ import org.w3c.dom.Element;
 public class ModelTheme implements Serializable {
 
     public static final String module = ModelTheme.class.getName();
-    /**
-     * The parameter name used to control widget boundary comments. Currently
-     * set to "widgetVerbose".
-     */
-    public static final String enableBoundaryCommentsParam = "widgetVerbose";
-
-    private final ModelTheme originTheme;
     //generic properties
     private final String name;
     private final Map<String, VisualTheme> visualThemes;
@@ -80,7 +73,10 @@ public class ModelTheme implements Serializable {
     private final Map<String, ModelTemplate> modelTemplateMap;
     private final Map<String, String> modelCommonScreensMap;
 
-    //** XML Constructor */
+    /**
+     * Only constructor to initialize a modelTheme from xml definition
+     * @param themeElement
+     */
     public ModelTheme(Element themeElement) {
         this.name = themeElement.getAttribute("name");
         ModelTheme initOriginTheme = null;
@@ -92,12 +88,12 @@ public class ModelTheme implements Serializable {
 
         // first resolve value from the origin theme
         Element originThemeElement = UtilXml.firstChildElement(themeElement, "extends");
+        ModelTheme originTheme = null;
         if (originThemeElement != null) {
-            initOriginTheme = ThemeFactory.getModelThemeFromLocation(originThemeElement.getAttribute("location"));
+            originTheme = ThemeFactory.getModelThemeFromLocation(originThemeElement.getAttribute("location"));
         }
-        this.originTheme = initOriginTheme;
 
-        if (this.originTheme != null) {
+        if (originTheme != null) {
             initWidgetPropertiesMap.put("defaultViewSize", originTheme.defaultViewSize);
             initWidgetPropertiesMap.put("autocompleterDefaultViewSize", originTheme.autocompleterDefaultViewSize);
             initWidgetPropertiesMap.put("autocompleterDefaultMinLength", originTheme.autocompleterDefaultMinLength);
@@ -235,7 +231,11 @@ public class ModelTheme implements Serializable {
         return lookupPosition;
     }
 
-
+    /**
+     * for a map preloaded with the origin values, surcharge them from xml definition
+     * @param initWidgetPropertiesMap
+     * @param widgetProperties
+     */
     private void addWidgetProperties(Map<String, Object> initWidgetPropertiesMap, Element widgetProperties) {
         for (Element childElement : UtilXml.childElementList(widgetProperties)) {
             switch (childElement.getNodeName()) {
@@ -261,6 +261,11 @@ public class ModelTheme implements Serializable {
         }
     }
 
+    /**
+     * for a map preloaded with the theme properties values, surcharge them from xml definition
+     * @param initThemePropertiesMap
+     * @param property
+     */
     private void addThemeProperty(Map<String, Object> initThemePropertiesMap, Element property) {
         FlexibleMapAccessor name = FlexibleMapAccessor.getInstance((String) property.getAttribute("name"));
         String value = property.getAttribute("value");
@@ -280,6 +285,11 @@ public class ModelTheme implements Serializable {
                 || themePropertiesMap.get(propertyName) == null) return "";
         return themePropertiesMap.get(propertyName);
     }
+
+    /**
+     * return the themes properties like VisualThemesRessources, keep the name for understanding compatibility
+     * @return
+     */
     public Map<String, Object> getThemeResources() {
         return themePropertiesMap;
     }
@@ -336,7 +346,7 @@ public class ModelTheme implements Serializable {
     }
 
     /**
-     *
+     * the ModelTemplate class, manage the complexity of macro library definition and the rendering technology
      */
     private class ModelTemplate {
         private final String name;
@@ -350,6 +360,10 @@ public class ModelTheme implements Serializable {
         private final String menuRendererLocation;
         private final String treeRendererLocation;
 
+        /**
+         * Constructor to initialize a ModelTemplate class from xml definition
+         * @param template
+         */
         public ModelTemplate(Element template) {
             this.name = template.getAttribute("name");
             this.type = template.getAttribute("type");
@@ -383,6 +397,12 @@ public class ModelTheme implements Serializable {
             this. menuRendererLocation = menuRendererLocation;
             this. treeRendererLocation = treeRendererLocation;
         }
+
+        /**
+         * Constructor to create a new ModelTemplate from the fusion on two ModelTemplates
+         * @param currentModelTemplate
+         * @param originModelTemplate
+         */
         public ModelTemplate (ModelTemplate currentModelTemplate, ModelTemplate originModelTemplate) {
             boolean exist = currentModelTemplate != null;
             this.name = exist ? currentModelTemplate.name : originModelTemplate.name;

@@ -19,6 +19,7 @@
 package org.apache.ofbiz.widget.renderer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.apache.ofbiz.widget.model.ModelTheme;
@@ -28,6 +29,10 @@ public final class VisualTheme {
 
     public static final String module = VisualTheme.class.getName();
     private ModelTheme modelTheme;
+    private final String visualThemeId;
+    private final List<String> screenshots;
+    private final String displayName;
+    private final String description;
 
     public String getVisualThemeId() {
         return visualThemeId;
@@ -45,25 +50,27 @@ public final class VisualTheme {
         return description;
     }
 
-    public String visualThemeId;
-    public List<String> screenshots = new ArrayList<>();
-    public String displayName = "";
-    public String description = "";
-
+    /**
+     * Only constructor to initialize a visualTheme from xml definition
+     * @param modelTheme
+     * @param visualThemeElement
+     */
     public VisualTheme(ModelTheme modelTheme, Element visualThemeElement) {
         this.modelTheme = modelTheme;
         this.visualThemeId = visualThemeElement.getAttribute("id");
         this.displayName = visualThemeElement.getAttribute("display-name");
         this.description = UtilXml.elementValue(UtilXml.firstChildElement(visualThemeElement, "description"));
+        List<String> initScreenshots = new ArrayList<>();
         for (Element screenshotElement : UtilXml.childElementList(visualThemeElement, "screenshot")) {
-            screenshots.add(screenshotElement.getAttribute("location"));
+            initScreenshots.add(screenshotElement.getAttribute("location"));
         }
+        this.screenshots = Collections.unmodifiableList(initScreenshots);
     }
 
     public ModelTheme getModelTheme() {
         return modelTheme;
     }
-/*
+
     public String toString() {
         StringBuilder toString = new StringBuilder("visual-theme-id:").append(visualThemeId)
                 .append(", display-name: ").append(this.displayName)
@@ -71,5 +78,4 @@ public final class VisualTheme {
                 .append(", screenshots: ").append(screenshots);
         return toString.toString();
     }
-    */
 }
