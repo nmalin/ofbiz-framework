@@ -190,9 +190,6 @@ public class ModelTheme implements Serializable {
     public List<String> getVisualThemeIds() {
         return new ArrayList<>(visualThemes.keySet());
     }
-    public boolean hasVisualThemeId(String visualThemeId) {
-        return visualThemes.containsKey(visualThemeId);
-    }
     public VisualTheme getVisualTheme(String visualThemeId) { return visualThemes.get(visualThemeId); }
 
     public Integer getDefaultViewSize() {
