@@ -143,13 +143,13 @@ under the License.
                 <section>
                     <actions>
                         <set field="layoutSettings.commonHeaderImageLinkUrl" from-field="layoutSettings.commonHeaderImageLinkUrl" default-value="main" global="true" />
-                        <set field="iconsLocation" from-field="layoutSettings.VT_ICONS_LOC[0]" default-value="/images/icons/famfamfam" global="true" />
-                        <set field="headerTemplateLocation" from-field="layoutSettings.VT_HDR_TMPLT_LOC[0]" />
-                        <set field="footerTemplateLocation" from-field="layoutSettings.VT_FTR_TMPLT_LOC[0]" />
-                        <set field="appbarTemplateLocation" from-field="layoutSettings.VT_NAV_TMPLT_LOC[0]" />
-                        <set field="appbarOpenTemplateLocation" from-field="layoutSettings.VT_NAV_OPEN_TMPLT[0]" />
-                        <set field="appbarCloseTemplateLocation" from-field="layoutSettings.VT_NAV_CLOSE_TMPLT[0]" />
-                        <set field="messagesTemplateLocation" from-field="layoutSettings.VT_MSG_TMPLT_LOC[0]" />
+                        <set field="iconsLocation" from-field="layoutSettings.VT_ICONS_LOC" default-value="/images/icons/famfamfam" global="true" />
+                        <set field="headerTemplateLocation" from-field="layoutSettings.VT_HDR_TMPLT_LOC" />
+                        <set field="footerTemplateLocation" from-field="layoutSettings.VT_FTR_TMPLT_LOC" />
+                        <set field="appbarTemplateLocation" from-field="layoutSettings.VT_NAV_TMPLT_LOC" />
+                        <set field="appbarOpenTemplateLocation" from-field="layoutSettings.VT_NAV_OPEN_TMPLT" />
+                        <set field="appbarCloseTemplateLocation" from-field="layoutSettings.VT_NAV_CLOSE_TMPLT" />
+                        <set field="messagesTemplateLocation" from-field="layoutSettings.VT_MSG_TMPLT_LOC" />
                         <set field="layoutSettings.suppressTab" value="ofbizsetup"/><!-- diseable ofbiz setup by default -->
                     </actions>
                     <widgets />
@@ -343,16 +343,11 @@ under the License.
                         <set field="userPreferences" from-field="prefResult.userPrefMap" global="true"/>
 
                         <property-map resource="general" map-name="generalProperties" global="true"/>
-                        <set field="visualThemeId" from-field="userPreferences.VISUAL_THEME" global="true"/>
                         <set field="defaultOrganizationPartyId" from-field="userPreferences.ORGANIZATION_PARTY" global="true"/>
-                        <service service-name="getVisualThemeResources">
-                            <field-map field-name="visualThemeId"/>
-                            <field-map field-name="themeResources" from-field="layoutSettings"/>
-                        </service>
 
-                        <set field="layoutSettings" from-field="themeResources" default-value="${layoutSettings}" global="true"/>
+                        <set field="layoutSettings" from-field="modelTheme.getThemeResources()" default-value="${layoutSettings}" global="true"/>
 
-                        <set field="messagesTemplateLocation" from-field="layoutSettings.VT_MSG_TMPLT_LOC[0]" default-value="component://common-theme/template/includes/Messages.ftl"/>
+                        <set field="messagesTemplateLocation" from-field="layoutSettings.VT_MSG_TMPLT_LOC" default-value="component://common-theme/template/includes/Messages.ftl"/>
                     </actions>
                     <widgets>
                         <section>
@@ -533,7 +528,7 @@ under the License.
                     <decorator-section name="body">
                         <section>
                             <actions>
-                                <set field="loginTemplateLocation" from-field="layoutSettings.VT_LOGIN_TMPLT_LOC[0]" default-value="component://common-theme/template/Login.ftl"/>
+                                <set field="loginTemplateLocation" from-field="layoutSettings.VT_LOGIN_TMPLT_LOC" default-value="component://common-theme/template/Login.ftl"/>
                             </actions>
                             <widgets />
                         </section>

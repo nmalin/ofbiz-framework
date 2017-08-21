@@ -28,7 +28,7 @@ import org.apache.ofbiz.entity.model.ModelReader
 import org.apache.ofbiz.widget.model.FormFactory
 import org.apache.ofbiz.widget.model.ModelForm
 import org.apache.ofbiz.widget.renderer.FormRenderer
-import org.apache.ofbiz.widget.renderer.Theme
+import org.apache.ofbiz.widget.renderer.VisualTheme
 import org.apache.ofbiz.widget.renderer.macro.MacroFormRenderer
 import org.w3c.dom.Document
 

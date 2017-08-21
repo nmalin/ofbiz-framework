@@ -22,7 +22,10 @@ under the License.
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes><!--List of visual theme contains to this theme components-->
-        <visual-theme id="COMMON"/>
+        <visual-theme id="COMMON" display-name="Common Theme">
+            <description>This is the common theme</description>
+            <screenshot location="/common/screenshot/CommonTheme1.png"/>
+        </visual-theme>
     </visual-themes>
     <widget-properties><!--Transversal properties relative to ofbiz widget component-->
         <default-view-size value="20"/>
@@ -45,6 +48,28 @@ under the License.
         <property name="jgrowl.width" value="800" type="Integer"/>
         <property name="jgrowl.height" value="" type="Integer"/>
         <property name="jgrowl.speed" value="100" type="Integer"/>
+        <property name="VT_SHORTCUT_ICON" value="/images/ofbiz.ico"/>
+        <property name="VT_HDR_TMPLT_LOC" value="component://flatgrey/template/Header.ftl"/>
+        <property name="VT_FTR_TMPLT_LOC" value="component://flatgrey/template/Footer.ftl"/>
+        <property name="VT_NAV_TMPLT_LOC" value="component://flatgrey/template/AppBar.ftl"/>
+        <property name="VT_MSG_TMPLT_LOC" value="component://common-theme/template/includes/Messages.ftl"/>
+        <property name="VT_HDR_JAVASCRIPT[]" value="/images/jquery/jquery-1.11.0.min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon.min-1.4.3.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/fjTimer/jquerytimer-min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/jquery.maskedinput-1.3.1.min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/jeditable/jquery.jeditable.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/plugins/validate/jquery.validate.min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/OpenLayers-2.13.1.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/OfbizUtil.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/fieldlookup.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/date/date.format-1.2.3-min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/date/date.timezone-min.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/miscAjaxFunctions.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/selectMultipleRelatedValues.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/util.js"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/date/FromThruDateCheck.js"/>
+        <property name="VT_STYLESHEET[]" value="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.css"/>
     </theme-properties>
 
     <templates><!-- Freemarker template use by this theme to render widget model-->
@@ -91,6 +116,7 @@ under the License.
             <screen name="SimpleDecorator"/>
             <screen name="FoReportDecorator"/>
             <screen name="GlobalFoDecorator"/>
+            <screen name="LookupHelpDecorator" location="component://common-theme/widget/HelpScreens.xml"/>
         </structural-decorator>
         <embed-decorator default-location="component://common-theme/widget/CommonScreens.xml">
             <screen name="FindScreenDecorator"/>
@@ -114,6 +140,14 @@ under the License.
             <screen name="forgotPassword"/>
             <screen name="help"/>
             <screen name="viewBlocked"/>
+            <screen name="TimeDuration" location="component://common-theme/widget/LookupScreens.xml"/>
+            <screen name="ListVisualThemes" location="component://common-theme/widget/LookupScreens.xml"/>
+            <screen name="ListSetCompanies" location="component://common-theme/widget/LookupScreens.xml"/>
+            <screen name="ListLocales" location="component://common-theme/widget/LookupScreens.xml"/>
+            <screen name="ListTimezones" location="component://common-theme/widget/LookupScreens.xml"/>
+            <screen name="showDocumentHelp" location="component://common-theme/widget/HelpScreens.xml"/>
+            <screen name="navigateHelp" location="component://common-theme/widget/HelpScreens.xml"/>
+            <screen name="ShowHelp" location="component://common-theme/widget/HelpScreens.xml"/>
         </general-screen>
     </common-screens>
 </theme>

@@ -1,7 +1,3 @@
-import org.apache.ofbiz.widget.model.ModelTheme
-import org.apache.ofbiz.widget.model.ThemeFactory
-import org.apache.ofbiz.widget.renderer.Theme
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,19 +17,24 @@ import org.apache.ofbiz.widget.renderer.Theme
  * under the License.
  */
 
-if (!globalContext.themeResources) {
-    Map themeResourcesResult = run service: 'getVisualThemeResources', with: ['visualThemeId': theme.getVisualThemeId()]
-    globalContext.themeResources = themeResourcesResult.themeResources
-    if (globalContext.layoutSettings) {
-        globalContext.layoutSettings.putAll(themeResourcesResult.themeResources)
+import org.apache.ofbiz.base.util.UtilMisc
+import org.apache.ofbiz.widget.model.ModelTheme
+import org.apache.ofbiz.widget.model.ThemeFactory
+import org.apache.ofbiz.widget.renderer.VisualTheme
+
+VisualTheme visualTheme = ThemeFactory.resolveVisualTheme(request)
+if (visualTheme) {
+    ModelTheme modelTheme = visualTheme.getModelTheme()
+    globalContext.commonScreenLocations = modelTheme.getModelCommonScreens()
+    globalContext.visualTheme = visualTheme
+    globalContext.modelTheme = modelTheme
+
+    if (globalContext.layoutSettings && globalContext.layoutSettings instanceof Map) {
+        globalContext.layoutSettings.putAll(modelTheme.getThemeResources())
     } else {
-        globalContext.layoutSettings = themeResourcesResult.themeResources
+        globalContext.layoutSettings = UtilMisc.makeMapWritable(modelTheme.getThemeResources())
     }
 }
+
 context.globalContext = globalContext
 
-Theme theme = ThemeFactory.resolveTheme(request)
-if (theme) {
-    ModelTheme modelTheme = theme.getModelTheme()
-    globalContext.commonScreenLocations = modelTheme.getModelCommonScreens()
-}

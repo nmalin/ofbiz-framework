@@ -22,10 +22,42 @@ under the License.
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="RAINBOWSTONE_SAPHIR"/>
-        <visual-theme id="RAINBOWSTONE_AMBER"/>
-        <visual-theme id="RAINBOWSTONE_RUBY"/>
-        <visual-theme id="RAINBOWSTONE_EMERALD"/>
+        <visual-theme id="RAINBOWSTONE_SAPHIR" display-name="Rainbow Stone - Saphir">
+            <screenshot location="/rainbowstone/images/themeSaphir.png"/>
+        </visual-theme>
+        <visual-theme id="RAINBOWSTONE_AMBER" display-name="Rainbow Stone - Amber">
+            <screenshot location="/rainbowstone/images/themeAmber.png"/>
+        </visual-theme>
+        <visual-theme id="RAINBOWSTONE_RUBY" display-name="Rainbow Stone - Ruby">
+            <screenshot location="/rainbowstone/images/themeRuby.png"/>
+        </visual-theme>
+        <visual-theme id="RAINBOWSTONE_EMERALD" display-name="Rainbow Stone - Emerald">
+            <screenshot location="/rainbowstone/images/themeEmerald.png"/>
+        </visual-theme>
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
+    <theme-properties>
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/style.css"/>
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/flag-icon.min.css"/>
+        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/javascript.css"/>
+        <property name="VT_RTL_STYLESHEET[]" value="/rainbowstone/stylertl.css"/>
+        <property name="VT_HELPSTYLESHEET[]" value="/rainbowstone/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET[]" value="/rainbowstone/webapp/rainbowstone/docbook.css"/>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/rainbowstone/js/less.min.js"/>
+        <property name="VT_FTR_JAVASCRIPT[+0]" value="/rainbowstone/js/rainbowstone.js"/>
+        <property name="VT_HDR_IMAGE_URL" value="/rainbowstone/images/ofbiz_logo.gif"/>
+        <property name="VT_HDR_TMPLT_LOC" value="component://rainbowstone/template/includes/Header.ftl"/>
+        <property name="VT_FTR_TMPLT_LOC" value="component://rainbowstone/template/includes/Footer.ftl"/>
+        <property name="VT_NAV_TMPLT_LOC" value="component://rainbowstone/template/includes/TopAppBar.ftl"/>
+        <property name="VT_CHPWD_TMPLT_LOC" value="component://rainbowstone/template/ChangePassword.ftl"/>
+        <property name="VT_FGPWD_TMPLT_LOC" value="component://rainbowstone/template/ForgotPassword.ftl"/>
+        <property name="VT_GSQUE_TMPLT_LOC" value="component://rainbowstone/template/GetSecurityQuestion.ftl"/>
+        <property name="VT_LOGIN_TMPLT_LOC" value="component://rainbowstone/template/Login.ftl"/>
+    </theme-properties>
+
+    <templates>
+        <template name="screen" type="html" content-type="UTF-8" encoding="none" encoder="html" compress="false">
+            <template-file widget="menu" location="component://rainbowstone/template/macro/HtmlMenuMacroLibrary.ftl"/>
+        </template>
+    </templates>
 </theme>

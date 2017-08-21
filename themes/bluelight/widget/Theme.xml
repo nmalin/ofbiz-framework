@@ -22,7 +22,22 @@ under the License.
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="BLUELIGHT"/>
+        <visual-theme id="BLUELIGHT" display-name="BlueLight Theme">
+            <description>breadcrumbs, drop-down menus and rounded corners</description>
+            <screenshot location="/bluelight/screenshot.jpg"/>
+        </visual-theme>
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
+
+    <theme-properties>
+        <property name="VT_HDR_JAVASCRIPT[+0]" value="/bluelight/dropdown.js" sequenceId="30"/>
+        <property name="VT_STYLESHEET[+0]" value="/bluelight/style.css"/>
+        <property name="VT_HELPSTYLESHEET[]" value="/bluelight/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET[]" value="/bluelight/webapp/bluelight/docbook.css"/>
+        <property name="VT_HDR_TMPLT_LOC" value="component://bluelight/template/Header.ftl"/>
+        <property name="VT_FTR_TMPLT_LOC" value="component://bluelight/template/Footer.ftl"/>
+        <property name="VT_NAV_OPEN_TMPLT" value="component://bluelight/template/AppBarOpen.ftl"/>
+        <property name="VT_NAV_CLOSE_TMPLT" value="component://bluelight/template/AppBarClose.ftl"/>
+        <property name="VT_MSG_TMPLT_LOC" value="component://bluelight/template/Messages.ftl"/>
+    </theme-properties>
 </theme>

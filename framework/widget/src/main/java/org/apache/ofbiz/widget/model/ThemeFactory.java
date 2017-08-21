@@ -21,27 +21,33 @@ package org.apache.ofbiz.widget.model;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.ofbiz.base.location.FlexibleLocation;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.FileUtil;
+import org.apache.ofbiz.base.util.UtilGenerics;
 import org.apache.ofbiz.base.util.UtilMisc;
 import org.apache.ofbiz.base.util.UtilProperties;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.UtilXml;
 import org.apache.ofbiz.base.util.cache.UtilCache;
+import org.apache.ofbiz.entity.Delegator;
+import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.entity.GenericValue;
+import org.apache.ofbiz.entity.condition.EntityCondition;
+import org.apache.ofbiz.entity.util.EntityUtil;
 import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
-import org.apache.ofbiz.webapp.WebAppUtil;
-import org.apache.ofbiz.webapp.website.WebSiteWorker;
-import org.apache.ofbiz.widget.renderer.Theme;
+import org.apache.ofbiz.widget.renderer.VisualTheme;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -54,7 +60,7 @@ public class ThemeFactory {
     public static final String module = ThemeFactory.class.getName();
 
     public static final UtilCache<String, ModelTheme> themeLocationCache = UtilCache.createUtilCache("widget.theme.locationResource", 0, 0, false);
-    public static final UtilCache<String, ModelTheme> themeVisualThemeIdCache = UtilCache.createUtilCache("widget.theme.idAndlocationResource", 0, 0, false);
+    public static final UtilCache<String, VisualTheme> themeVisualThemeIdCache = UtilCache.createUtilCache("widget.theme.idAndVisualTheme", 0, 0, false);
 
     public static ModelTheme getModelThemeFromLocation(String resourceName) {
         ModelTheme modelTheme = themeLocationCache.get(resourceName);
@@ -89,44 +95,72 @@ public class ThemeFactory {
         return null;
     }
 
-    public static Theme getThemeFromId(String visualThemeId) {
+    public static VisualTheme getVisualThemeFromId(String visualThemeId) {
         if (visualThemeId == null) return null;
-        ModelTheme modelTheme = themeVisualThemeIdCache.get(visualThemeId);
-        if (modelTheme == null) {
+        VisualTheme visualTheme = themeVisualThemeIdCache.get(visualThemeId);
+        if (visualTheme == null) {
             synchronized (ThemeFactory.class) {
-                modelTheme = themeVisualThemeIdCache.get(visualThemeId);
-                if (modelTheme == null) {
-                    String ofbizHome = System.getProperty("ofbiz.home");
-                    try {
-                        List<File> xmlThemes = FileUtil.findXmlFiles(ofbizHome, "themes", "theme", "widget-theme.xsd");
-                        List<File> xmlPluginThemes = FileUtil.findXmlFiles(ofbizHome, "plugins", "theme", "widget-theme.xsd");
-                        if (UtilValidate.isNotEmpty(xmlPluginThemes)) xmlThemes.addAll(xmlPluginThemes);
-                        for (File xmlTheme : xmlThemes) {
-                            modelTheme = getModelThemeFromLocation(xmlTheme.toURI().toURL().toString());
-                            if (modelTheme != null) {
-                                for (String containsVisualThemeId : modelTheme.getVisualThemeIds()) {
-                                    themeVisualThemeIdCache.put(containsVisualThemeId, modelTheme);
-                                }
-                            }
-                        }
-                    } catch (IOException e) {
-                        Debug.logError("Impossible to resolve the theme from the visualThemeId " + visualThemeId + " throw: " + e, module);
+                visualTheme = themeVisualThemeIdCache.get(visualThemeId);
+                if (visualTheme == null) {
+                    pullModelThemesFromXmlToCache();
+                }
+                visualTheme = themeVisualThemeIdCache.get(visualThemeId);
+                if (visualTheme == null) {
+                    Debug.logError("Impossible to resolve the modelTheme for the visualThemeId " + visualThemeId + ", Common is returned", module);
+                    return themeVisualThemeIdCache.get("COMMON");
+                }
+
+            }
+        }
+        return visualTheme;
+    }
+
+    public static List<VisualTheme> getAvailableThemes(Delegator delegator, String visualThemeSetId)
+    throws GenericEntityException {
+        if (themeVisualThemeIdCache.size() == 0) {
+            synchronized (ThemeFactory.class) {
+                if (themeVisualThemeIdCache.size() == 0) {
+                    pullModelThemesFromXmlToCache();
+                }
+            }
+        }
+        LinkedHashMap<String, VisualTheme> visualThemesMap = new LinkedHashMap<>();
+        List<GenericValue> visualThemesInDataBase = delegator.findList("VisualTheme",
+                EntityCondition.makeCondition("visualThemeSetId", visualThemeSetId), null, UtilMisc.toList("visualThemeId"), null, true);
+        List<String> visualThemeIds = EntityUtil.getFieldListFromEntityList(visualThemesInDataBase, "visualThemeId", true);
+        for (String visualThemeId : visualThemeIds) {
+            visualThemesMap.put(visualThemeId, themeVisualThemeIdCache.get(visualThemeId));
+        }
+        return new ArrayList(visualThemesMap.values());
+    }
+
+    private static void pullModelThemesFromXmlToCache() {
+        String ofbizHome = System.getProperty("ofbiz.home");
+        try {
+            List<File> xmlThemes = FileUtil.findXmlFiles(ofbizHome, "themes", "theme", "widget-theme.xsd");
+            List<File> xmlPluginThemes = FileUtil.findXmlFiles(ofbizHome, "plugins", "theme", "widget-theme.xsd");
+            if (UtilValidate.isNotEmpty(xmlPluginThemes)) xmlThemes.addAll(xmlPluginThemes);
+            for (File xmlTheme : xmlThemes) {
+                ModelTheme modelTheme = getModelThemeFromLocation(xmlTheme.toURI().toURL().toString());
+                if (modelTheme != null) {
+                    for (String containsVisualThemeId : modelTheme.getVisualThemeIds()) {
+                        themeVisualThemeIdCache.put(containsVisualThemeId, modelTheme.getVisualTheme(containsVisualThemeId));
                     }
                 }
             }
-            return new Theme(themeVisualThemeIdCache.get(visualThemeId), visualThemeId);
+        } catch (IOException e) {
+            Debug.logError("Impossible to initialize models themes in cache throw: " + e, module);
         }
-        return new Theme(modelTheme, visualThemeId);
     }
 
-    public static Theme resolveTheme(HttpServletRequest request) {
+    public static VisualTheme resolveVisualTheme(HttpServletRequest request) {
         String visualThemeId = null;
         HttpSession session = request.getSession();
         GenericValue userLogin = (GenericValue) session.getAttribute("userLogin");
         //search on request only if a userLogin is present on session (otherwise this implied that the user isn't identify so wait
         if (userLogin != null) {
-            Theme theme = (Theme) session.getAttribute("theme");
-            if (theme != null) return theme;
+            VisualTheme visualTheme = (VisualTheme) session.getAttribute("visualTheme");
+            if (visualTheme != null) return visualTheme;
 
             //resolve on user pref
             LocalDispatcher dispatcher = (LocalDispatcher) request.getAttribute("dispatcher");
@@ -151,6 +185,6 @@ public class ThemeFactory {
         if (visualThemeId == null) {
             visualThemeId = UtilProperties.getPropertyValue("general", "VISUAL_THEME", "COMMON");
         }
-        return getThemeFromId(visualThemeId);
+        return getVisualThemeFromId(visualThemeId);
     }
 }

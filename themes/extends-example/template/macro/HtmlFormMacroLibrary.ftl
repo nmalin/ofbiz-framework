@@ -20,7 +20,7 @@ under the License.
 
 <#macro renderDisplayField type imageLocation idName description title class alert inPlaceEditorUrl="" inPlaceEditorParams="">
     <#if description?has_content>
-    **${description?replace("\n", "<br />")}**<#t/>
+    *###*${description?replace("\n", "<br />")}**<#t/>
     <#else>
         &nbsp;<#t/>
     </#if>

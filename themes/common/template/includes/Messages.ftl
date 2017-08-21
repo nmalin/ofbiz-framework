@@ -17,7 +17,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 <#escape x as x?html>
-<#assign modelTheme = theme.getModelTheme()>
+<#assign modelTheme = visualTheme.getModelTheme()>
   <#if requestAttributes.errorMessageList?has_content><#assign errorMessageList=requestAttributes.errorMessageList></#if>
   <#if requestAttributes.eventMessageList?has_content><#assign eventMessageList=requestAttributes.eventMessageList></#if>
   <#if requestAttributes.serviceValidationException??><#assign serviceValidationException = requestAttributes.serviceValidationException></#if>
@@ -73,10 +73,10 @@ under the License.
       </#list>
     </#if>
   </div>
-  <#assign jGrowlPosition = theme.getModelTheme().getProperty("jgrowl.position")>
-  <#assign jGrowlWidth = theme.getModelTheme().getProperty("jgrowl.width")>
-  <#assign jGrowlHeight = theme.getModelTheme().getProperty("jgrowl.height")>
-  <#assign jGrowlSpeed = theme.getModelTheme().getProperty("jgrowl.speed")>
+  <#assign jGrowlPosition = visualTheme.getModelTheme().getProperty("jgrowl.position")>
+  <#assign jGrowlWidth = visualTheme.getModelTheme().getProperty("jgrowl.width")>
+  <#assign jGrowlHeight = visualTheme.getModelTheme().getProperty("jgrowl.height")>
+  <#assign jGrowlSpeed = visualTheme.getModelTheme().getProperty("jgrowl.speed")>
   <script>showjGrowl(
           "${uiLabelMap.CommonShowAll}", "${uiLabelMap.CommonCollapse}", "${uiLabelMap.CommonHideAllNotifications}",
           "${jGrowlPosition}", "${jGrowlWidth}", "${jGrowlHeight}", "${jGrowlSpeed}");</script>
