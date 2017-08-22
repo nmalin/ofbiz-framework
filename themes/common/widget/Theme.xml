@@ -23,7 +23,7 @@ under the License.
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes><!--List of visual theme contains to this theme components-->
         <visual-theme id="COMMON" display-name="Common Theme">
-            <description>This is the common theme</description>
+            <description>${str:label('CommonThemeUiLabels', 'CommonThemeVisualThemeDescription', locale)}</description>
             <screenshot location="/images/spinner.gif"/>
         </visual-theme>
     </visual-themes>
