@@ -135,16 +135,35 @@ After creating component, you can add the two minimal information :
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="MY_THEME"/>
+        <visual-theme id="MY_THEME" display-name="My Theme"/>
     </visual-themes>
 </theme>
 ```
 * your data file to add your visual theme in **plugins/my-theme/data/**
 ```xml
 <entity-engine-xml>
-    <VisualTheme visualThemeId="MY_THEME" visualThemeSetId="BACKOFFICE" description="My theme"/>
+    <VisualTheme visualThemeId="MY_THEME" visualThemeSetId="BACKOFFICE"/>
 </entity-engine-xml>
 ```
+The present of VisualTheme entity help to indicate what theme is available on your instance, specially helpful for tenant installation.
+
+For display your theme in OFBiz theme library, you can complete information on each visual theme like
+```
+<theme name="my-theme"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
+    <visual-themes>
+        <visual-theme id="MY_THEME" display-name="My Theme">
+            <description>My new funny theme under nice tecnno</description>
+            <screenshot location="/mytheme/screenshot1.png"/>
+            <screenshot location="/mytheme/screenshot2.png"/>
+        </visual-theme>
+    </visual-themes>
+</theme>
+```
+
+>_Note_: **display-name** and **description** support the flexibleStringExpander syntax
+
 ## extends common-theme
 This is a first step to understand how the theme system works. With your new theme, you can try to surchage different elements.
 To start, extends the common-theme :
@@ -153,7 +172,10 @@ To start, extends the common-theme :
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="MY_THEME"/>
+        <visual-theme id="MY_THEME" display-name="My Theme">
+            <description>My new funny theme under nice tecnno</description>
+            <screenshot location="/mytheme/screenshot1.png"/>
+        </visual-theme>
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
 </theme>
@@ -179,7 +201,10 @@ Now indicate to your theme that you want use this library
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
-        <visual-theme id="MY_THEME"/>
+        <visual-theme id="MY_THEME" display-name="My Theme">
+            <description>My new funny theme under nice tecnno</description>
+            <screenshot location="/mytheme/screenshot1.png"/>
+        </visual-theme>
     </visual-themes>
     <extends location="component://common-theme/widget/Theme.xml"/>
     <templates>
@@ -192,3 +217,88 @@ Now indicate to your theme that you want use this library
 and check the result when you select your theme. Ok ok the result isn't really interesting but it's to understand how it works.
 
 ## create from scratch
+TODO
+
+# Backware compatibility with OFBiz 16.11 and above
+## How themes worked before
+Before the theme management by model definition, all configuration has been present in database through entity VisualTheme and VisualThemeRessource.
+These ressources has been load on layoutProperties variable and learn directly by decorator screen and ftl template.
+
+## Now with the common-theme
+All this logical is currently present on the common-theme template to keep the backward compatibility, but the VisualThemeRessource is now useless and properties has been migrate to the Theme definition in the part **theme-properties**
+### Example with Bluelight
+The blue light theme has been these properties in VisualThemeRessource :
+
+```xml
+    <VisualTheme visualThemeId="BLUELIGHT" visualThemeSetId="BACKOFFICE" description="BlueLight Theme: breadcrumbs, drop-down menus and rounded corners"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_NAME" resourceValue="BLUELIGHT" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_IMAGE_URL" resourceValue="/images/ofbiz_logo.gif" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_SHORTCUT_ICON" resourceValue="/images/ofbiz.ico" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_SCREENSHOT" resourceValue="/bluelight/screenshot.jpg" sequenceId="01"/>
+
+    <!-- CSS references -->
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_STYLESHEET" resourceValue="/bluelight/style.css" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HELPSTYLESHEET" resourceValue="/bluelight/help.css" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_DOCBOOKSTYLESHEET" resourceValue="/bluelight/webapp/bluelight/docbook.css" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_STYLESHEET" resourceValue="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.css" sequenceId="02"/>
+
+    <!-- Javascript references -->
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/jquery-1.11.0.min.js" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/jquery-migrate-1.2.1.js" sequenceId="02"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/ui/js/jquery-ui-1.10.3.min.js" sequenceId="03"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.js" sequenceId="05"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/datetimepicker/jquery-ui-timepicker-addon.min-1.4.3.js" sequenceId="07"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/fjTimer/jquerytimer-min.js" sequenceId="09"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/jquery.maskedinput-1.3.1.min.js" sequenceId="10"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/jeditable/jquery.jeditable.js" sequenceId="11"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/jquery/plugins/validate/jquery.validate.min.js" sequenceId="12"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/OpenLayers-2.13.1.js" sequenceId="13"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/OfbizUtil.js" sequenceId="15"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/fieldlookup.js" sequenceId="16"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/date/date.format-1.2.3-min.js" sequenceId="17"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/date/date.timezone-min.js" sequenceId="18"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/miscAjaxFunctions.js" sequenceId="19"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/selectMultipleRelatedValues.js" sequenceId="20"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/util.js" sequenceId="21"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/images/date/FromThruDateCheck.js" sequenceId="22"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_JAVASCRIPT" resourceValue="/bluelight/dropdown.js" sequenceId="30"/>
+
+    <!-- ftl references -->
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_HDR_TMPLT_LOC" resourceValue="component://bluelight/template/Header.ftl" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_FTR_TMPLT_LOC" resourceValue="component://bluelight/template/Footer.ftl" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_NAV_OPEN_TMPLT" resourceValue="component://bluelight/template/AppBarOpen.ftl" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_NAV_CLOSE_TMPLT" resourceValue="component://bluelight/template/AppBarClose.ftl" sequenceId="01"/>
+    <VisualThemeResource visualThemeId="BLUELIGHT" resourceTypeEnumId="VT_MSG_TMPLT_LOC" resourceValue="component://bluelight/template/Messages.ftl" sequenceId="01"/>
+```
+Now it's just
+```xml
+    <VisualTheme visualThemeId="BLUELIGHT" visualThemeSetId="BACKOFFICE"/>
+```
+And on theme definition
+
+```xml
+    <theme-properties>
+        <!--javascript lib-->
+        <property name="VT_HDR_JAVASCRIPT['add']" value="/bluelight/dropdown.js" sequenceId="30"/>
+        <!--Css style-->
+        <property name="VT_STYLESHEET['add']" value="/bluelight/style.css"/>
+        <property name="VT_HELPSTYLESHEET['add']" value="/bluelight/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET['add']" value="/bluelight/webapp/bluelight/docbook.css"/>
+        <!--template location-->
+        <property name="VT_HDR_TMPLT_LOC" value="component://bluelight/template/Header.ftl"/>
+        <property name="VT_FTR_TMPLT_LOC" value="component://bluelight/template/Footer.ftl"/>
+        <property name="VT_NAV_OPEN_TMPLT" value="component://bluelight/template/AppBarOpen.ftl"/>
+        <property name="VT_NAV_CLOSE_TMPLT" value="component://bluelight/template/AppBarClose.ftl"/>
+        <property name="VT_MSG_TMPLT_LOC" value="component://bluelight/template/Messages.ftl"/>
+    </theme-properties>
+```
+Values with **/images/...** has been move to the common-theme that bluelight extends, the theme definition keep only what the theme use more the extended theme.
+
+>_Note_ property name support the FlexibleMapAccessor syntax, so you can continue to populate a list (VT_STYLESHEET['add']), reset a list (VT_STYLESHEET[]) or add an element on the top list (VT_STYLESHEET[+0]) because some time the order librry load is important
+
+### Migrate you own theme
+Easily, create you Theme.xml and move your VisualThemeResource in **theme-properties** like bluelight example.
+Maybe you need to update you template because the modelTheme return ressources not always as list. So :
+`<property name="VT_HDR_TMPLT_LOC" value="component://bluelight/template/Header.ftl"/>` -> return a String with `component://bluelight/template/Header.ftl`
+`<property name="VT_STYLESHEET['add'] value="..."` -> return a List<String>
+
