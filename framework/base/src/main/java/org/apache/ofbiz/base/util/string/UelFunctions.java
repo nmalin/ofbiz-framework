@@ -37,6 +37,7 @@ import javax.el.FunctionMapper;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.ofbiz.base.util.UtilProperties;
 import org.cyberneko.html.parsers.DOMParser;
 import org.apache.ofbiz.base.location.FlexibleLocation;
 import org.apache.ofbiz.base.util.Debug;
@@ -134,6 +135,7 @@ import org.w3c.dom.Node;
  * <tr><td><code>str:toString(Object)</code></td><td>Converts <code>Object</code> to a <code>String</code> - bypassing localization.</td></tr>
  * <tr><td><code>str:toUpperCase(String)</code></td><td>Converts all of the characters in this String to upper case using the rules of the default locale.</td></tr>
  * <tr><td><code>str:trim(String)</code></td><td>Returns a copy of the string, with leading and trailing whitespace omitted.</td></tr>
+ * <tr><td><code>str:label(Strin, String, Locale)</code></td><td>Return the label in the local present on the ressource.</td></tr>
  * <tr><td colspan="2"><b><code>sys:</code> maps to <code>java.lang.System</code></b></td></tr>
  * <tr><td><code>sys:getenv(String)</code></td><td>Gets the value of the specified environment variable.</td></tr>
  * <tr><td><code>sys:getProperty(String)</code></td><td>Gets the system property indicated by the specified key.</td></tr>
@@ -247,6 +249,7 @@ public class UelFunctions {
                 this.functionMap.put("str:toLowerCase", UelFunctions.class.getMethod("toLowerCase", String.class));
                 this.functionMap.put("str:toUpperCase", UelFunctions.class.getMethod("toUpperCase", String.class));
                 this.functionMap.put("str:trim", UelFunctions.class.getMethod("trim", String.class));
+                this.functionMap.put("str:label", UelFunctions.class.getMethod("label", String.class, String.class, Locale.class));
                 this.functionMap.put("sys:getenv", UelFunctions.class.getMethod("sysGetEnv", String.class));
                 this.functionMap.put("sys:getProperty", UelFunctions.class.getMethod("sysGetProp", String.class));
                 this.functionMap.put("util:size", UelFunctions.class.getMethod("getSize", Object.class));
@@ -414,6 +417,15 @@ public class UelFunctions {
 
     public static String toString(Object obj) {
         return obj.toString();
+    }
+
+    public static String label(String ressource, String label, Locale locale) {
+        if (locale == null) locale = Locale.getDefault();
+        try {
+            String resolveLabel = UtilProperties.getMessage(ressource, label, locale);
+            if (resolveLabel != null) return resolveLabel;
+        } catch (Exception e) {}
+        return label;
     }
 
     public static String sysGetEnv(String str) {
