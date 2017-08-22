@@ -31,9 +31,9 @@ under the License.
 
     <theme-properties>
         <!--javascript lib-->
-        <property name="VT_HDR_JAVASCRIPT[+0]" value="/bluelight/dropdown.js" sequenceId="30"/>
+        <property name="VT_HDR_JAVASCRIPT['add']" value="/bluelight/dropdown.js" sequenceId="30"/>
         <!--Css style-->
-        <property name="VT_STYLESHEET[+0]" value="/bluelight/style.css"/>
+        <property name="VT_STYLESHEET['add']" value="/bluelight/style.css"/>
         <property name="VT_HELPSTYLESHEET[]" value="/bluelight/help.css"/>
         <property name="VT_DOCBOOKSTYLESHEET[]" value="/bluelight/webapp/bluelight/docbook.css"/>
         <!--template location-->

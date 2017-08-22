@@ -47,15 +47,15 @@ under the License.
         <property name="VT_GSQUE_TMPLT_LOC" value="component://rainbowstone/template/GetSecurityQuestion.ftl"/>
         <property name="VT_LOGIN_TMPLT_LOC" value="component://rainbowstone/template/Login.ftl"/>
         <!--javascript lib-->
-        <property name="VT_HDR_JAVASCRIPT[+0]" value="/rainbowstone/js/less.min.js"/>
-        <property name="VT_FTR_JAVASCRIPT[+0]" value="/rainbowstone/js/rainbowstone.js"/>
+        <property name="VT_HDR_JAVASCRIPT['add']" value="/rainbowstone/js/less.min.js"/>
+        <property name="VT_FTR_JAVASCRIPT['add']" value="/rainbowstone/js/rainbowstone.js"/>
         <!--Css style-->
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/style.css"/>
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/flag-icon.min.css"/>
-        <property name="VT_STYLESHEET[+0]" value="/rainbowstone/javascript.css"/>
-        <property name="VT_RTL_STYLESHEET[]" value="/rainbowstone/stylertl.css"/>
-        <property name="VT_HELPSTYLESHEET[]" value="/rainbowstone/help.css"/>
-        <property name="VT_DOCBOOKSTYLESHEET[]" value="/rainbowstone/webapp/rainbowstone/docbook.css"/>
+        <property name="VT_STYLESHEET['add']" value="/rainbowstone/style.css"/>
+        <property name="VT_STYLESHEET['add']" value="/rainbowstone/flag-icon.min.css"/>
+        <property name="VT_STYLESHEET['add']" value="/rainbowstone/javascript.css"/>
+        <property name="VT_RTL_STYLESHEET['add']" value="/rainbowstone/stylertl.css"/>
+        <property name="VT_HELPSTYLESHEET['add']" value="/rainbowstone/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET['add']" value="/rainbowstone/webapp/rainbowstone/docbook.css"/>
     </theme-properties>
 
     <templates>
