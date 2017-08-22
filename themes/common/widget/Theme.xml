@@ -80,7 +80,6 @@ under the License.
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/jquery-migrate-1.2.1.js"/>
         <property name="VT_HDR_JAVASCRIPT[+0]" value="/images/jquery/jquery-1.11.0.min.js"/>
         <!--Css style-->
-        <property name="VT_STYLESHEET[]" value="/images/jquery/plugins/asmselect/jquery.asmselect-1.0.4a-beta.css"/>
     </theme-properties>
 
     <templates><!-- Freemarker template use by this theme to render widget model-->
