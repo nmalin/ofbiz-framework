@@ -21,7 +21,9 @@ package org.apache.ofbiz.widget.renderer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.apache.ofbiz.base.util.UtilXml;
+import org.apache.ofbiz.base.util.string.FlexibleStringExpander;
 import org.apache.ofbiz.widget.model.ModelTheme;
 import org.w3c.dom.Element;
 
@@ -34,8 +36,8 @@ public final class VisualTheme {
     private ModelTheme modelTheme;
     private final String visualThemeId;
     private final List<String> screenshots;
-    private final String displayName;
-    private final String description;
+    private final FlexibleStringExpander displayName;
+    private final FlexibleStringExpander description;
 
     public String getVisualThemeId() {
         return visualThemeId;
@@ -45,12 +47,12 @@ public final class VisualTheme {
         return screenshots;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getDisplayName(Map<String, Object> context) {
+        return displayName.expandString(context);
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescription(Map<String, Object> context) {
+        return description.expandString(context);
     }
 
     /**
@@ -61,8 +63,8 @@ public final class VisualTheme {
     public VisualTheme(ModelTheme modelTheme, Element visualThemeElement) {
         this.modelTheme = modelTheme;
         this.visualThemeId = visualThemeElement.getAttribute("id");
-        this.displayName = visualThemeElement.getAttribute("display-name");
-        this.description = UtilXml.elementValue(UtilXml.firstChildElement(visualThemeElement, "description"));
+        this.displayName = FlexibleStringExpander.getInstance(visualThemeElement.getAttribute("display-name"));
+        this.description = FlexibleStringExpander.getInstance(UtilXml.elementValue(UtilXml.firstChildElement(visualThemeElement, "description")));
         List<String> initScreenshots = new ArrayList<>();
         for (Element screenshotElement : UtilXml.childElementList(visualThemeElement, "screenshot")) {
             initScreenshots.add(screenshotElement.getAttribute("location"));
