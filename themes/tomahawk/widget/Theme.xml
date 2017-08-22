@@ -23,7 +23,7 @@ under the License.
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
         <visual-theme id="TOMAHAWK" display-name="Tomahawk">
-            <description>The black evolution of the BlueLight theme</description>
+            <description>${str:label('CommonEntityLabels', 'VisualTheme.description.TOMAHAWK', locale)}</description>
             <screenshot location="/tomahawk/screenshot.jpg"/>
         </visual-theme>
     </visual-themes>

@@ -23,7 +23,7 @@ under the License.
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
         <visual-theme id="MULTIFLEX" display-name="Multiflex">
-            <description>Alternative VisualTheme for Ecommerce</description>
+            <description>${str:label('CommonEntityLabels', 'VisualTheme.description.MULTIFLEX', locale)}</description>
             <screenshot location="/multiflex/screenshot.jpg"/>
         </visual-theme>
     </visual-themes>

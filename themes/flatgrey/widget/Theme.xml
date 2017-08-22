@@ -23,7 +23,7 @@ under the License.
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
         <visual-theme id="FLAT_GREY" display-name="Flat Grey">
-            <description>Floating Layout, Sight-Impaired Accessible, Bidirectional</description>
+            <description>${str:label('CommonEntityLabels', 'VisualTheme.description.FLAT_GREY', locale)}</description>
             <screenshot location="/flatgrey/screenshot.jpg"/>
         </visual-theme>
     </visual-themes>

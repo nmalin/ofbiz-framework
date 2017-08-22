@@ -66,7 +66,7 @@ margin: 1em;
               <input type="hidden" name="userPrefValue" value="${visualThemeId}"/>
             </form>
             <a href="javascript:document.forms['SetUserPreferences_${visualThemeId}'].submit()">
-              ${visualTheme.getDisplayName()?default(visualThemeId)} ${visualTheme.getDescription()!}
+              ${visualTheme.getDisplayName(context)?default(visualThemeId)} ${visualTheme.getDescription(context)!}
             </a>
           </td>
           <td>

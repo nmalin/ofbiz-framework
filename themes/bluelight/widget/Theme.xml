@@ -23,7 +23,7 @@ under the License.
         xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/widget-theme.xsd">
     <visual-themes>
         <visual-theme id="BLUELIGHT" display-name="BlueLight Theme">
-            <description>breadcrumbs, drop-down menus and rounded corners</description>
+            <description>${str:label('CommonEntityLabels', 'VisualTheme.description.BLUELIGHT', locale)}</description>
             <screenshot location="/bluelight/screenshot.jpg"/>
         </visual-theme>
     </visual-themes>
@@ -34,8 +34,8 @@ under the License.
         <property name="VT_HDR_JAVASCRIPT['add']" value="/bluelight/dropdown.js" sequenceId="30"/>
         <!--Css style-->
         <property name="VT_STYLESHEET['add']" value="/bluelight/style.css"/>
-        <property name="VT_HELPSTYLESHEET[]" value="/bluelight/help.css"/>
-        <property name="VT_DOCBOOKSTYLESHEET[]" value="/bluelight/webapp/bluelight/docbook.css"/>
+        <property name="VT_HELPSTYLESHEET['add']" value="/bluelight/help.css"/>
+        <property name="VT_DOCBOOKSTYLESHEET['add']" value="/bluelight/webapp/bluelight/docbook.css"/>
         <!--template location-->
         <property name="VT_HDR_TMPLT_LOC" value="component://bluelight/template/Header.ftl"/>
         <property name="VT_FTR_TMPLT_LOC" value="component://bluelight/template/Footer.ftl"/>
