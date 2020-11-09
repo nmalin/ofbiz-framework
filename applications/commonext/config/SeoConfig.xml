@@ -25,7 +25,7 @@ under the License.
         <!-- enable/disable
           1. if enable, the product seo url will be /product-name-product-id.html or /category-name-product-name-product-id.html
           2. if disable, the CatalogUrlServlet.makeCatalogUrl will be used -->
-        <allowed-context-paths>/:/ecomseo/perlesduberry</allowed-context-paths>
+        <allowed-context-paths>/:/ecomseo:/perlesduberry</allowed-context-paths>
         <!-- if category-url is enabled, only context paths listed here will be allowed to use the new seo transformers -->
         <category-name>disable</category-name>
         <!-- enable/disable
