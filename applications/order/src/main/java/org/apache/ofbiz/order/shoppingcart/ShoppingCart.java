@@ -74,9 +74,15 @@ import org.apache.ofbiz.product.category.CategoryWorker;
 import org.apache.ofbiz.product.config.ProductConfigWrapper;
 import org.apache.ofbiz.product.product.ProductWorker;
 import org.apache.ofbiz.product.store.ProductStoreWorker;
+import org.apache.ofbiz.service.DispatchContext;
+import org.apache.ofbiz.service.GenericAbstractDispatcher;
+import org.apache.ofbiz.service.GenericDispatcherFactory;
 import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
+import org.apache.ofbiz.service.LocalDispatcherFactory;
+import org.apache.ofbiz.service.ServiceContainer;
 import org.apache.ofbiz.service.ServiceUtil;
+import org.apache.ofbiz.service.config.model.ServiceConfig;
 
 /**
  * Shopping Cart Object
@@ -166,6 +172,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
     private Timestamp cartCreatedTs = UtilDateTime.nowTimestamp();
 
     private transient Delegator delegator = null;
+    private LocalDispatcher dispatcher = null;
     private String delegatorName = null;
 
     private String productStoreId = null;
@@ -205,6 +212,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
     /** Creates a new cloned ShoppingCart Object. */
     public ShoppingCart(ShoppingCart cart) {
         this.delegator = cart.getDelegator();
+        this.dispatcher = cart.getDispatcher();
         this.delegatorName = delegator.getDelegatorName();
         this.productStoreId = cart.getProductStoreId();
         this.doPromotions = cart.getDoPromotions();
@@ -268,6 +276,7 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
                         String billToCustomerPartyId, String billFromVendorPartyId) {
 
         this.delegator = delegator;
+        this.dispatcher = ServiceContainer.getLocalDispatcher("ShoppingCart", delegator);
         this.delegatorName = delegator.getDelegatorName();
         this.productStoreId = productStoreId;
         this.webSiteId = webSiteId;
@@ -316,6 +325,13 @@ public class ShoppingCart implements Iterable<ShoppingCartItem>, Serializable {
             delegator = DelegatorFactory.getDelegator(delegatorName);
         }
         return delegator;
+    }
+    /** get dispatcher */
+    public LocalDispatcher getDispatcher() {
+        if (dispatcher == null) {
+            dispatcher = ServiceContainer.getLocalDispatcher("ShoppingCart", getDelegator());
+        }
+        return dispatcher;
     }
 
     /** get product store */

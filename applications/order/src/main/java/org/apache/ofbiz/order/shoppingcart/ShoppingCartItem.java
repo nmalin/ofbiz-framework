@@ -64,6 +64,7 @@ import org.apache.ofbiz.product.product.ProductWorker;
 import org.apache.ofbiz.product.store.ProductStoreWorker;
 import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
+import org.apache.ofbiz.service.ServiceContainer;
 import org.apache.ofbiz.service.ServiceUtil;
 
 /**
@@ -80,6 +81,7 @@ public class ShoppingCartItem implements java.io.Serializable {
     private static final String RESOURCE = "OrderUiLabels";
     private static final String RES_ERROR = "OrderErrorUiLabels";
     private transient Delegator delegator = null;
+    private LocalDispatcher dispatcher = null;
     /**
      * the actual or variant product
      */
@@ -179,6 +181,7 @@ public class ShoppingCartItem implements java.io.Serializable {
      */
     public ShoppingCartItem(ShoppingCartItem item) {
         this.delegator = item.getDelegator();
+        this.dispatcher = item.dispatcher;
         try {
             this.product = item.getProduct();
         } catch (IllegalStateException e) {
@@ -275,6 +278,7 @@ public class ShoppingCartItem implements java.io.Serializable {
                                String prodCatalogId, Locale locale,
                                String itemType, ShoppingCart.ShoppingCartItemGroup itemGroup, LocalDispatcher dispatcher) {
         this(product, additionalProductFeatureAndAppls, attributes, prodCatalogId, null, locale, itemType, itemGroup, null);
+        this.dispatcher = dispatcher;
         String productName = ProductContentWrapper.getProductContentAsText(product, "PRODUCT_NAME", this.locale, dispatcher, "html");
         // if the productName is null or empty, see if there is an associated virtual product and get the productName of that product
         if (UtilValidate.isEmpty(productName)) {
@@ -2143,25 +2147,13 @@ public class ShoppingCartItem implements java.io.Serializable {
      * Returns the item's unit weight
      */
     public BigDecimal getWeight() {
+        BigDecimal weight = null;
         GenericValue product = getProduct();
         if (product != null) {
-            BigDecimal weight = product.getBigDecimal("productWeight");
-
-            // if the weight is null, see if there is an associated virtual product and get the weight of that product
-            if (weight == null) {
-                GenericValue parentProduct = this.getParentProduct();
-                if (parentProduct != null) {
-                    weight = parentProduct.getBigDecimal("productWeight");
-                }
-            }
-
-            if (weight == null) {
-                return BigDecimal.ZERO;
-            }
-            return weight;
+            weight = ProductWorker.getProductWeight(product, "WT_kg", delegator, getDispatcher());
         }
         // non-product items have 0 weight
-        return BigDecimal.ZERO;
+        return weight != null ? weight: BigDecimal.ZERO;
     }
 
     /**
@@ -3114,6 +3106,14 @@ public class ShoppingCartItem implements java.io.Serializable {
         }
         return delegator;
     }
+    /** get dispatcher */
+    public LocalDispatcher getDispatcher() {
+        if (dispatcher == null) {
+            dispatcher = ServiceContainer.getLocalDispatcher("ShoppingCart", getDelegator());
+        }
+        return dispatcher;
+    }
+
 
     /**
      * Explode item list.
