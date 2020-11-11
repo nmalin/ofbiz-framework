@@ -50,6 +50,7 @@ import org.apache.ofbiz.entity.condition.EntityCondition;
 import org.apache.ofbiz.entity.condition.EntityExpr;
 import org.apache.ofbiz.entity.condition.EntityOperator;
 import org.apache.ofbiz.entity.util.EntityQuery;
+import org.apache.ofbiz.entity.util.EntityTypeUtil;
 import org.apache.ofbiz.entity.util.EntityUtil;
 import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.order.order.OrderReadHelper;
@@ -2689,12 +2690,24 @@ public class ShoppingCartItem implements java.io.Serializable {
         if (product != null) {
             List<GenericValue> featureAppls = null;
             try {
-                featureAppls = product.getRelated("ProductFeatureAppl", null, null, false);
-                List<EntityExpr> filterExprs = UtilMisc.toList(EntityCondition.makeCondition("productFeatureApplTypeId",
-                        EntityOperator.EQUALS, "STANDARD_FEATURE"));
-                filterExprs.add(EntityCondition.makeCondition("productFeatureApplTypeId", EntityOperator.EQUALS, "REQUIRED_FEATURE"));
-                filterExprs.add(EntityCondition.makeCondition("productFeatureApplTypeId", EntityOperator.EQUALS, "DISTINGUISHING_FEAT"));
-                featureAppls = EntityUtil.filterByOr(featureAppls, filterExprs);
+                List<String> productIds = UtilMisc.toList(product.getString("productId"));
+                //for marketing package, resolve each features contains in the package
+                if (EntityTypeUtil.hasParentType(delegator, "ProductType",
+                        "productTypeId", product.getString("productTypeId"), "parentTypeId", "MARKETING_PKG_PICK")) {
+                    productIds.addAll(EntityQuery.use(delegator).from("ProductAndAssocTo")
+                            .where("productId", product.get("productId"),
+                                    "productAssocTypeId", "PRODUCT_COMPONENT")
+                            .filterByDate()
+                            .cache()
+                            .getFieldList("productIdTo"));
+                }
+                featureAppls = EntityQuery.use(delegator).from("ProductFeatureAppl")
+                        .where(EntityCondition.makeCondition("productId", EntityOperator.IN, productIds),
+                                EntityCondition.makeCondition("productFeatureApplTypeId", EntityOperator.IN,
+                                        UtilMisc.toList("REQUIRED_FEATURE", "DISTINGUISHING_FEAT", "STANDARD_FEATURE")))
+                        .filterByDate()
+                        .cache()
+                        .queryList();
             } catch (GenericEntityException e) {
                 Debug.logError(e, "Unable to get features from product : " + product.get("productId"), MODULE);
             }
