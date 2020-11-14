@@ -165,7 +165,7 @@ under the License.
       
       <td>     
         <select name="countryGeoId" id="editcontactmechform_countryGeoId">
-          <#if (mechMap.postalAddress??) && (mechMap.postalAddress.countryGeoId??)>
+              <#if (mechMap.postalAddress??) && (mechMap.postalAddress.countryGeoId??)>
             <#assign defaultCountryGeoId = mechMap.postalAddress.countryGeoId>
           <#else>
            <#assign defaultCountryGeoId = Static["org.apache.ofbiz.entity.util.EntityUtilProperties"].getPropertyValue("general", "country.geo.id.default", delegator)>
