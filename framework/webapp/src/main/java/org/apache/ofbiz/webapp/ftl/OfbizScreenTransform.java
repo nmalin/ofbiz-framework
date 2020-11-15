@@ -37,6 +37,7 @@ import org.apache.ofbiz.base.util.UtilHttp;
 import org.apache.ofbiz.base.util.collections.MapStack;
 import org.apache.ofbiz.base.util.template.FreeMarkerWorker;
 import org.apache.ofbiz.widget.model.ModelTheme;
+import org.apache.ofbiz.widget.model.ThemeFactory;
 import org.apache.ofbiz.widget.renderer.ScreenRenderer;
 import org.apache.ofbiz.widget.renderer.ScreenStringRenderer;
 import org.apache.ofbiz.widget.renderer.VisualTheme;
@@ -109,7 +110,8 @@ public class OfbizScreenTransform implements TemplateTransformModel {
                     Environment env = Environment.getCurrentEnvironment();
                     BeanModel req = (BeanModel) env.getVariable("request");
                     HttpServletRequest request = req == null ? null : (HttpServletRequest) req.getWrappedObject();
-                    VisualTheme visualTheme = UtilHttp.getVisualTheme(request);
+                    VisualTheme visualTheme = (VisualTheme) context.get("visualTheme");
+                    if (visualTheme == null) visualTheme = ThemeFactory.resolveVisualTheme(request);
                     ModelTheme modelTheme = visualTheme.getModelTheme();
 
                     String screenName = name.isEmpty() ? buf.toString() : name;
