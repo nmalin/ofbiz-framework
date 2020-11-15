@@ -508,6 +508,8 @@ public class EmailServices {
         MapStack<String> screenContext = MapStack.create();
         screenContext.put("locale", locale);
         screenContext.put("webSiteId", webSiteId);
+        screenContext.put("sendEmailServiceContext", serviceContext);
+        screenContext.put("bodyEmailContext", bodyParameters);
 
         ScreenStringRenderer screenStringRenderer = null;
         try {
