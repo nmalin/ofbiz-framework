@@ -28,9 +28,9 @@ import java.io.Writer;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.GeneralException;
 import org.apache.ofbiz.base.util.UtilGenerics;
-import org.apache.ofbiz.base.util.UtilHttp;
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.base.util.collections.MapStack;
 import org.apache.ofbiz.base.util.template.FreeMarkerWorker;
@@ -87,6 +87,9 @@ public class OfbizScreenTransform implements TemplateTransformModel {
 
                     //check if the name is combined
                     if (screenName.contains("#")) {
+                        if (Debug.verboseOn()) {
+                            Debug.logVerbose("Call screen with combined location" + screenName, MODULE);
+                        }
                         screens.render(screenName);
                     } else {
                         String forwardLocation = location != null ? location :
@@ -94,7 +97,10 @@ public class OfbizScreenTransform implements TemplateTransformModel {
                         if (forwardLocation == null) {
                             throw new IllegalStateException("No location resolved to rendering the screen");
                         }
-                        screens.render(screenName, forwardLocation);
+                        if (Debug.verboseOn()) {
+                            Debug.logVerbose("Call screen " + screenName + ", at location : " + forwardLocation, MODULE);
+                        }
+                        screens.render(forwardLocation, screenName);
                     }
 
                     out.write(writer.toString());
