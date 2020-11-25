@@ -28,6 +28,7 @@
         <permission-service service-name="genericContentPermission" main-action="CREATE"/>
         <auto-attributes include="pk" mode="INOUT" optional="true"/>
         <auto-attributes include="nonpk" mode="IN" optional="true"/>
+        <auto-attributes include="nonpk" mode="INOUT" optional="true" entity-name="ContentAssoc"/>
         <attribute name="contentAssocTypeId" type="String" mode="INOUT" optional="true"/>
         <attribute name="contentIdFrom" type="String" mode="INOUT" optional="true"/>
         <attribute name="contentIdTo" type="String" mode="INOUT" optional="true"/>
