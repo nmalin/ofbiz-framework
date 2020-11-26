@@ -123,7 +123,7 @@
         <auto-attributes include="pk" mode="INOUT" optional="false"/>
         <auto-attributes include="nonpk" mode="IN" optional="true"/>
         <attribute name="contentId" mode="INOUT" optional="true" type="String"/><!-- to optionaly know where this text is belonging to -->
-        <override name="textData" allow-html="safe"/>
+        <override name="textData" allow-html="any"/>
     </service>
     <service name="createElectronicTextForm" default-entity-name="ElectronicText" engine="entity-auto" invoke="create" auth="true">
         <description>Create a ElectronicText with Form code</description>
