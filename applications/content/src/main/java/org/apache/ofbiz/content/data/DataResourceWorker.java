@@ -503,7 +503,6 @@ public class DataResourceWorker implements org.apache.ofbiz.widget.content.DataR
         if (maxFiles < 1) {
             maxFiles = 250;
         }
-
         return getDataResourceContentUploadPath(initialPath, maxFiles, absolute);
     }
 
@@ -532,6 +531,8 @@ public class DataResourceWorker implements org.apache.ofbiz.widget.content.DataR
 
         if (!initialPath.startsWith("/")) {
             initialPath = "/" + initialPath;
+        } else {
+            if (absolute) ofbizHome = "";
         }
 
         // descending comparator
