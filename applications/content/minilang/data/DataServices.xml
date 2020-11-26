@@ -141,21 +141,15 @@ under the License.
             <condition>
                 <and>
                     <if-compare field="forceLocal" value="true" operator="equals"/>
-                    <not>
-                        <or>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="LOCAL_FILE"/>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="OFBIZ_FILE"/>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="CONTEXT_FILE"/>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="LOCAL_FILE_BIN"/>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="OFBIZ_FILE_BIN"/>
-                            <if-compare field="parameters.dataResourceTypeId" operator="equals" value="CONTEXT_FILE_BIN"/>
-                        </or>
-                    </not>
+                    <if-compare field="parameters.dataResourceTypeId" value="_FILE" operator="contains"/>
                 </and>
             </condition>
             <then>
                 <set field="parameters.dataResourceTypeId" value="LOCAL_FILE"/>
             </then>
+            <else>
+                <set field="parameters.dataResourceTypeId" value="OFBIZ_FILE"/>
+            </else>
         </if>
 
         <if-empty field="parameters.dataResourceTypeId">
