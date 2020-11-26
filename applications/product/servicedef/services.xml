@@ -418,7 +418,7 @@ under the License.
         <auto-attributes include="pk" mode="IN" optional="false"/>
         <auto-attributes include="nonpk" mode="IN" optional="true"/>
         <auto-attributes entity-name="Content" include="nonpk" mode="IN" optional="true"/>
-        <attribute name="text" type="String" mode="IN" optional="false" allow-html="safe"/>
+        <attribute name="text" type="String" mode="IN" optional="false" allow-html="any"/>
         <override name="contentId" optional="true"/>
         <override name="fromDate" optional="true"/>
     </service>
