@@ -23,21 +23,25 @@ under the License.
     # Just one configured dimension on two is allowed to restrict just one image dimension, whatever its proportions 
 -->
 <imageSize xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <size name="thumbnail">
+        <dimension name="height" value="170"/>
+        <dimension name="width" value="170"/>
+    </size>
     <size name="small">
-        <dimension name="height" value="50"/>
-        <dimension name="width" value="50"/>
+        <dimension name="height" value="170"/>
+        <dimension name="width" value="170"/>
     </size>
     <size name="medium">
-        <dimension name="height" value="100"/>
-        <dimension name="width" value="100"/>
+        <dimension name="height" value="700"/>
+        <dimension name="width" value="700"/>
     </size>
     <size name="large">
-        <dimension name="height" value="200"/>
-        <dimension name="width" value="200"/>
+        <dimension name="height" value="1170"/>
+        <dimension name="width" value="1170"/>
     </size>
     <size name="detail">
-        <dimension name="height" value="600"/>
-        <dimension name="width" value="600"/>
+        <dimension name="height" value="1920"/>
+        <dimension name="width" value="1920"/>
     </size>
     <size name="100x75">
         <dimension name="height" value="75"/>
@@ -70,9 +74,5 @@ under the License.
      <size name="1600x1200">
         <dimension name="height" value="1200"/>
         <dimension name="width" value="1600"/>
-    </size>
-    <size name="thumbnail">
-        <dimension name="height" value="100"/>
-        <dimension name="width" value="100"/>
     </size>
 </imageSize>
