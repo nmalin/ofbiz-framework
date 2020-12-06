@@ -65,6 +65,11 @@ under the License.
 
     <form name="EditArticle" target="createBlogArticle" title="" type="upload" skip-end="true" default-map-name="blogEntry"
         default-title-style="treeHeader" default-widget-style="inputBox">
+        <actions>
+            <entity-one entity-name="StatusItem" value-field="statusItem">
+                <field-map field-name="statusId" from-field="blogEntry.statusId"/>
+            </entity-one>
+        </actions>
         <alt-target use-when="contentId!=void&amp;&amp;contentId!=null" target="updateBlogArticle"/>
         <field name="blogContentId"><hidden value="${parameters.blogContentId}"/></field>
         <field name="contentId" title="${uiLabelMap.ContentBlogEntryId}" use-when="contentId!=void&amp;&amp;contentId!=null"><display/></field>
@@ -79,12 +84,19 @@ under the License.
                 <option key="BLOG_TPL_TOPCENTER" description="${uiLabelMap.ContentBlogTopCenter}"/>
             </drop-down>
         </field>-->
-        <field name="statusId" title="${uiLabelMap.CommonStatus}">
-            <drop-down no-current-selected-key="CTNT_INITIAL_DRAFT">
-                <option key="CTNT_PUBLISHED" description="${uiLabelMap.ContentBlogPublish}"/>
-                <option key="CTNT_INITIAL_DRAFT" description="${uiLabelMap.ContentBlogPreview}"/>
+        <field name="statusId" use-when="statusItem != null">
+            <drop-down allow-empty="false" current="first-in-list" current-description="${statusItem.description}">
+                <entity-options entity-name="StatusValidChangeToDetail" key-field-name="statusIdTo" description="${transitionName} (${description})">
+                    <entity-constraint name="statusId" env-name="blogEntry.statusId"/>
+                    <entity-order-by field-name="sequenceId"/>
+                </entity-options>
             </drop-down>
         </field>
+            <!--<drop-down no-current-selected-key="CTNT_INITIAL_DRAFT">
+                <option key="CTNT_PUBLISHED" description="${uiLabelMap.ContentBlogPublish}"/>
+                <option key="CTNT_INITIAL_DRAFT" description="${uiLabelMap.ContentBlogPreview}"/>
+                <option key="CTNT_DEACTIVATED" description="${uiLabelMap.StatusItem.description.CTNT_DEACTIVATED}"/>
+            </drop-down>-->
         <field name="submitButton" title="${uiLabelMap.CommonSubmit}" widget-style="smallSubmit"><submit button-type="button"/></field>
     </form>
 
