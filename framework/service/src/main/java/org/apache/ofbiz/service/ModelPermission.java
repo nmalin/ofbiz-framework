@@ -271,7 +271,8 @@ public class ModelPermission implements Serializable {
             Debug.logVerbose("Service permission result : hasPermission " + resp.get("hasPermission") + ", failMessage " + failMessage, MODULE);
         }
         if (permissionReturnErrorOnFailure
-                && (UtilValidate.isNotEmpty(failMessage) || !((Boolean) resp.get("hasPermission")).booleanValue())) {
+                && (UtilValidate.isNotEmpty(failMessage)
+                || (resp.get("hasPermission") != null && !((Boolean) resp.get("hasPermission")).booleanValue()))) {
             if (UtilValidate.isEmpty(failMessage)) {
                 failMessage = UtilProperties.getMessage(RESOURCE, "ServicePermissionErrorRefused", locale);
             }
