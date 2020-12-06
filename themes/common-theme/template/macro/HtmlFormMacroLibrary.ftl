@@ -72,7 +72,7 @@ under the License.
 
 <#macro renderTextareaField name className alert cols="" rows="" maxlength="" id="" readonly="" value="" visualEditorEnable="" buttons="" tabindex="" language="" disabled="">
   <#if visualEditorEnable?has_content>
-    <#local className = className + " visual-editor">
+    <#local className = className + " sun-editor-editable">
   </#if>
   <textarea name="${name}"<#t/>
     <@renderClass className alert />
@@ -82,12 +82,17 @@ under the License.
     <#if readonly?has_content && readonly=='readonly'> readonly="readonly"</#if><#rt/>
     <#if maxlength?has_content> maxlength="${maxlength}"</#if><#rt/>
     <#if tabindex?has_content> tabindex="${tabindex}"</#if><#rt/>
-    <#if visualEditorEnable?has_content> data-toolbar="${buttons?default("maxi")}"</#if><#rt/>
+    <#if visualEditorEnable?has_content></#if>
     <#if language?has_content> data-language="${language!"en"}"</#if><#rt/>
     <#if disabled?has_content && disabled> disabled="disabled"</#if><#rt/>
     ><#t/>
     <#if value?has_content>${value}</#if><#t/>
   </textarea><#lt/>
+  <#if visualEditorEnable?has_content>
+      <script type="application/javascript">
+        visualEditor("${id}");
+      </script>
+  </#if>
 </#macro>
 
 <#macro renderDateTimeField name className alert dateType timeDropdownParamName defaultDateTimeString localizedIconTitle timeHourName timeMinutesName minutes isTwelveHour ampmName amSelected pmSelected compositeType timeDropdown="" classString="" hour1="" hour2="" shortDateInput="" title="" value="" size="" maxlength="" id="" formName="" mask="" event="" action="" step="" timeValues="" tabindex="" disabled="">

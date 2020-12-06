@@ -1509,6 +1509,28 @@ var importLibrary = function() {
     }
 }();
 
+function visualEditor(id) {
+    const editor = SUNEDITOR.create((document.getElementById(id) || id),{
+//        codeMirror: CodeMirror,
+        buttonList: [
+            ['save', 'template'],
+            ['undo', 'redo'],
+            ['font', 'fontSize', 'formatBlock'],
+            ['paragraphStyle', 'blockquote'],
+            ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
+            ['fontColor', 'hiliteColor', 'textStyle'],
+            ['removeFormat'],
+            '/', // Line break
+            ['outdent', 'indent'],
+            ['align', 'horizontalRule', 'list', 'lineHeight'],
+            ['table', 'link', 'image', 'video', 'audio'],
+            ['fullScreen', 'showBlocks', 'codeView']
+        ]
+        ,
+        addTagsWhitelist: '@ofbizScreen|@ofbizUrl|#assign'
+    });
+}
+
 function isLocalEnviron(){
     return ["localhost","127.0.0.1"].includes(window.location.hostname);
 }
