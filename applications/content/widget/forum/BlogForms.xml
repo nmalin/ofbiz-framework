@@ -73,12 +73,12 @@ under the License.
         <field name="summaryData" title="${uiLabelMap.ContentSummary}" widget-style="inputBox"><textarea cols="60" rows="4" visual-editor-enable="true"/></field>
         <field name="articleData" title="${uiLabelMap.ContentBlogArticle}" widget-style="inputBox"><textarea cols="100" rows="20" visual-editor-enable="true"/></field>
         <field name="uploadedFile" title="${uiLabelMap.ContentImage}"><file size="25"/></field>
-        <field name="templateDataResourceId" title="${uiLabelMap.ContentTemplate}">
+<!--        <field name="templateDataResourceId" title="${uiLabelMap.ContentTemplate}">
             <drop-down>
                 <option key="BLOG_TPL_TOPLEFT" description="${uiLabelMap.ContentBlogTopLeft}"/>
                 <option key="BLOG_TPL_TOPCENTER" description="${uiLabelMap.ContentBlogTopCenter}"/>
             </drop-down>
-        </field>
+        </field>-->
         <field name="statusId" title="${uiLabelMap.CommonStatus}">
             <drop-down no-current-selected-key="CTNT_INITIAL_DRAFT">
                 <option key="CTNT_PUBLISHED" description="${uiLabelMap.ContentBlogPublish}"/>

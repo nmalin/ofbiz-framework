@@ -26,9 +26,10 @@
         <if-empty field="parameters.statusId">
             <set field="parameters.statusId" value="CTNT_INITIAL_DRAFT"/>
         </if-empty>
+        <!--
         <if-empty field="parameters.templateDataResourceId">
             <set field="parameters.templateDataResourceId" value="BLOG_TPL_TOPLEFT"/>
-        </if-empty>
+        </if-empty>-->
 
         <!-- determine of we need to create complex template structure or simple content structure -->
         <if-empty field="parameters.contentName">
