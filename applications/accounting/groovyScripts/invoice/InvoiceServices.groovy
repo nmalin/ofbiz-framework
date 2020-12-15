@@ -26,16 +26,16 @@ import org.apache.ofbiz.service.ServiceUtil
 import java.sql.Timestamp
 
 def getNextInvoiceId() {
-    result = success()
+    Map result = success()
 
     // try to find PartyAcctgPreference for parameters.partyId, see if we need any special invoice number sequencing
     GenericValue partyAcctgPreference = from('PartyAcctgPreference').where(parameters).queryOne()
     if (Debug.infoOn()) logInfo("In getNextInvoiceId partyId is [${parameters.partyId}], partyAcctgPreference: ${partyAcctgPreference}")
 
-    String customMethodName = null;
-    String invoiceIdPrefix = '';
+    String customMethodName = null
+    String invoiceIdPrefix = ''
     if (partyAcctgPreference) {
-        invoiceIdPrefix = partyAcctgPreference.invoiceIdPrefix
+        invoiceIdPrefix = partyAcctgPreference.invoiceIdPrefix ?: ''
         //see OFBIZ-3765 beware of OFBIZ-3557
         GenericValue customMethod = partyAcctgPreference.getRelatedOne('InvoiceCustomMethod', true)
         if (customMethod) {
@@ -81,7 +81,7 @@ def getNextInvoiceId() {
 }
 
 def invoiceSequenceEnforced() {
-    result = success()
+    Map result = success()
 
     logInfo('In createInvoice sequence enum Enforced')
     GenericValue partyAcctgPreference = parameters.partyAcctgPreference
@@ -99,7 +99,7 @@ def invoiceSequenceEnforced() {
 }
 
 def invoiceSequenceRestart() {
-    result = success()
+    Map result = success()
 
     logInfo('In createInvoice sequence enum Enforced')
     GenericValue partyAcctgPreference = parameters.partyAcctgPreference
