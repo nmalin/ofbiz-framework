@@ -596,6 +596,22 @@ under the License.
           </#if>
 
           <#-- tracking number -->
+            <#if !shipGroup.trackingNumber?has_content>
+            <tr><td colspan="3"><hr /></td></tr>
+            <tr>
+                <td class="label">
+                    <span class="label">&nbsp;${uiLabelMap.OrderTrackingNumber}</span>
+                </td>
+                <td colspan="2">
+                    <form name="updateTrackingNumber" method="post" action="<@ofbizUrl>updateTrackingNumber</@ofbizUrl>">
+                        <input type="hidden" name="orderId" value="${orderId!}"/>
+                        <input type="hidden" name="shipGroupSeqId" value="${shipGroup.shipGroupSeqId!}"/>
+                        <input type="text" name="trackingNumber"/>
+                        <input type="submit" value="${uiLabelMap.CommonUpdate}" class="smallSubmit"/>
+                    </form>
+                </td>
+            </tr>
+            </#if>
           <#if shipGroup.trackingNumber?has_content || orderShipmentInfoSummaryList?has_content>
             <tr><td colspan="3"><hr /></td></tr>
             <tr>

@@ -2556,30 +2556,24 @@ public class OrderServices {
      * Service to update the order tracking number
      */
     public static Map<String, Object> updateTrackingNumber(DispatchContext dctx, Map<String, ? extends Object> context) {
-        Map<String, Object> result = new HashMap<>();
         Delegator delegator = dctx.getDelegator();
-        String orderId = (String) context.get("orderId");
-        String shipGroupSeqId = (String) context.get("shipGroupSeqId");
         String trackingNumber = (String) context.get("trackingNumber");
 
         try {
-            GenericValue shipGroup = EntityQuery.use(delegator).from("OrderItemShipGroup").where("orderId", orderId, "shipGroupSeqId",
-                    shipGroupSeqId).queryOne();
+            GenericValue shipGroup = EntityQuery.use(delegator).from("OrderItemShipGroup")
+                    .where("orderId", context.get("orderId"),
+                            "shipGroupSeqId", context.get("shipGroupSeqId"))
+                    .queryOne();
 
             if (shipGroup == null) {
-                result.put(ModelService.RESPONSE_MESSAGE, ModelService.RESPOND_ERROR);
-                result.put(ModelService.ERROR_MESSAGE, "ERROR: No order shipment preference found!");
-            } else {
-                shipGroup.set("trackingNumber", trackingNumber);
-                shipGroup.store();
-                result.put(ModelService.RESPONSE_MESSAGE, ModelService.RESPOND_SUCCESS);
+                return ServiceUtil.returnError("No order shipment preference found!");
             }
+            shipGroup.set("trackingNumber", trackingNumber);
+            shipGroup.store();
         } catch (GenericEntityException e) {
-            Debug.logError(e, MODULE);
-            result.put(ModelService.RESPONSE_MESSAGE, ModelService.RESPOND_ERROR);
-            result.put(ModelService.ERROR_MESSAGE, "ERROR: Could not set tracking number (" + e.getMessage() + ").");
+            return ServiceUtil.returnError("Could not set tracking number (" + e.getMessage() + ").");
         }
-        return result;
+        return ServiceUtil.returnSuccess();
     }
 
     /**
