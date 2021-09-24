@@ -20,6 +20,7 @@
 package org.apache.ofbiz.content.webapp.ftl;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.entity.GenericValue;
 import org.apache.ofbiz.entity.util.EntityQuery;
-import org.apache.ofbiz.webapp.WebAppUtil;
+import org.apache.ofbiz.webapp.OfbizUrlBuilder;
 
 import freemarker.core.Environment;
 import freemarker.ext.beans.BeanModel;
@@ -44,6 +45,7 @@ import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateTransformModel;
+import org.apache.ofbiz.webapp.control.WebAppConfigurationException;
 
 public class OfbizContentAltUrlTransforms implements TemplateTransformModel {
     private static final String MODULE = OfbizContentAltUrlTransforms.class.getName();
@@ -127,24 +129,26 @@ public class OfbizContentAltUrlTransforms implements TemplateTransformModel {
                             "caThruDate", null,
                             "contentIdStart", contentId)
                     .orderBy("-caFromDate")
+                    .cache()
                     .queryFirst();
             if (contentAssocDataResource != null) {
                 url = contentAssocDataResource.getString("drObjectInfo");
                 url = UtilCodec.getDecoder("url").decode(url);
-                String mountPoint = request.getContextPath();
-                if (!("/".equals(mountPoint)) && !("".equals(mountPoint))) {
-                    url = mountPoint + url;
-                }
             }
         } catch (GenericEntityException gee) {
             Debug.logWarning("[Exception] : " + gee.getMessage(), MODULE);
         }
 
         if (UtilValidate.isEmpty(url)) {
-            if (UtilValidate.isEmpty(viewContent)) {
-                viewContent = DEF_VIEW_REQUEST;
-            }
             url = makeContentUrl(request, response, contentId, viewContent);
+        }
+        try {
+            OfbizUrlBuilder ofbizUrlBuilder = OfbizUrlBuilder.from(request);
+            Writer writer = new StringWriter();
+            ofbizUrlBuilder.buildFullUrl(writer, url, true);
+            return writer.toString();
+        } catch (GenericEntityException | WebAppConfigurationException | IOException e) {
+            Debug.logError(e, "Failed to resolve the url", MODULE);
         }
         return url;
     }
@@ -154,11 +158,6 @@ public class OfbizContentAltUrlTransforms implements TemplateTransformModel {
             return null;
         }
         StringBuilder urlBuilder = new StringBuilder();
-        urlBuilder.append(request.getSession().getServletContext().getContextPath());
-        if (urlBuilder.length() == 0 || urlBuilder.charAt(urlBuilder.length() - 1) != '/') {
-            urlBuilder.append("/");
-        }
-        urlBuilder.append(WebAppUtil.CONTROL_MOUNT_POINT);
 
         if (UtilValidate.isNotEmpty(viewContent)) {
             urlBuilder.append("/" + viewContent);

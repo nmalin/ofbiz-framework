@@ -22,7 +22,6 @@ import org.apache.ofbiz.base.util.UtilProperties
 import org.apache.ofbiz.content.content.ContentKeywordIndex
 import org.apache.ofbiz.common.UrlServletHelper
 import org.apache.ofbiz.entity.condition.EntityCondition
-import org.apache.ofbiz.entity.condition.EntityConditionBuilder
 import org.apache.ofbiz.entity.GenericValue
 import org.apache.ofbiz.entity.condition.EntityOperator
 import org.apache.ofbiz.entity.util.EntityListIterator
@@ -125,13 +124,11 @@ def deactivateAllContentRoles() {
 def createContentAlternativeUrl() {
     //create Content Alternative URLs.
     String contentCreated = "N"
-    defaultLocaleString = parameters.locale ?: "en"
-    EntityListIterator contents
+    String defaultLocaleString = parameters.locale ?: "en"
 
     EntityCondition entryExprs
-    EntityCondition contentTypeExprs = EntityCondition.makeCondition(EntityOperator.OR,
-        'contentTypeId', "DOCUMENT",
-        'contentTypeId', "WEB_SITE_PUB_PT")
+    EntityCondition contentTypeExprs = EntityCondition.makeCondition(
+            "contentTypeId", EntityOperator.IN, ["DOCUMENT", "WEB_SITE_PUB_PT"])
     if (parameters.contentId) {
         entryExprs = new EntityConditionBuilder().AND(contentTypeExprs) {
             NOT_EQUAL(contentName: null)
@@ -143,7 +140,7 @@ def createContentAlternativeUrl() {
         }
     }
 
-    contents = select("contentId", "contentName", "localeString")
+    EntityListIterator contents = select("contentId", "contentName", "localeString")
             .from("Content")
             .where(entryExprs)
             .queryIterator()
@@ -151,7 +148,9 @@ def createContentAlternativeUrl() {
     GenericValue content
     while (content = contents.next()) {
         String localeString = content.localeString ?: defaultLocaleString
-        List contentAssocDataResources = select("contentIdStart", "dataResourceId", "localeString", "drObjectInfo", "caFromDate", "caThruDate")
+        List contentAssocDataResources = select("contentIdStart", "dataResourceId",
+                "localeString", "drObjectInfo",
+                "caFromDate", "caThruDate")
                 .from("ContentAssocDataResourceViewTo")
                 .where(caContentAssocTypeId: "ALTERNATIVE_URL",
                         contentIdStart: content.contentId,
