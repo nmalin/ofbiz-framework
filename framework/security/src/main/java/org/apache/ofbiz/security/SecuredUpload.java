@@ -46,6 +46,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -68,6 +71,7 @@ import org.apache.commons.imaging.formats.tiff.TiffImageParser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.FileUtil;
 import org.apache.ofbiz.base.util.StringUtil;
@@ -109,7 +113,9 @@ public class SecuredUpload {
     private static final String MODULE = SecuredUpload.class.getName();
     private static final List<String> DENIEDFILEEXTENSIONS = getDeniedFileExtensions();
     private static final List<String> DENIEDWEBSHELLTOKENS = getDeniedWebShellTokens();
+
     private static final Integer MAXLINELENGTH = UtilProperties.getPropertyAsInteger("security", "maxLineLength", 10000);
+
     private static final Boolean ALLOWSTRINGCONCATENATIONINUPLOADEDFILES =
             UtilProperties.getPropertyAsBoolean("security", "allowStringConcatenationInUploadedFiles", false);
 
@@ -123,7 +129,7 @@ public class SecuredUpload {
         String contentWithoutSpaces = content.replace(" ", "");
         if ((contentWithoutSpaces.contains("\"+\"") || contentWithoutSpaces.contains("'+'"))
                 && !ALLOWSTRINGCONCATENATIONINUPLOADEDFILES) {
-            Debug.logInfo("The uploaded file contains a string concatenation. It can't be uploaded for security reason", MODULE);
+            Debug.logError("The uploaded file contains a string concatenation. It can't be uploaded for security reason", MODULE);
             return false;
         }
         return content != null ? DENIEDWEBSHELLTOKENS.stream().allMatch(token -> isValid(content, token.toLowerCase(), allowed)) : false;
@@ -548,14 +554,14 @@ public class SecuredUpload {
                             Document document = UtilXml.readXmlDocument(importer.getUTF8());
                             if (document.toString().equals("[#document: null]")) {
                                 safeState = false;
-                                Debug.logInfo("The file " + file.getAbsolutePath()
+                                Debug.logError("The file " + file.getAbsolutePath()
                                         + " is not a readable (valid and secure) PDF file. For security reason it's not accepted as a such file",
                                         MODULE);
 
                             }
                         } catch (SAXException | ParserConfigurationException | IOException e) {
                             safeState = false;
-                            Debug.logInfo(e, "The file " + file.getAbsolutePath()
+                            Debug.logError(e, "The file " + file.getAbsolutePath()
                                     + " is not a readable (valid and secure) PDF file. For security reason it's not accepted as a such file",
                                     MODULE);
                         }
@@ -565,7 +571,7 @@ public class SecuredUpload {
             safeState = Objects.isNull(efTree) || canParseZUGFeRD;
         } catch (Exception e) {
             safeState = false;
-            Debug.logInfo(e, "The file " + file.getAbsolutePath() + " is not a readable (valid and secure) PDF file. "
+            Debug.logError(e, "The file " + file.getAbsolutePath() + " is not a readable (valid and secure) PDF file. "
                     + "For security reason it's not accepted as a such file",
                     MODULE);
         }
@@ -775,7 +781,7 @@ public class SecuredUpload {
                 || "audio/x-flac".equals(mimeType)) {
             return true;
         }
-        Debug.logInfo("The file " + fileName + " is not a valid audio file. For security reason it's not accepted as a such file", MODULE);
+        Debug.logError("The file " + fileName + " is not a valid audio file. For security reason it's not accepted as a such file", MODULE);
         return false;
     }
 
@@ -800,7 +806,7 @@ public class SecuredUpload {
                 || "video/x-ms-wmx".equals(mimeType)) {
             return true;
         }
-        Debug.logInfo("The file " + fileName + " is not a valid video file. For security reason it's not accepted as a such file", MODULE);
+        Debug.logError("The file " + fileName + " is not a valid video file. For security reason it's not accepted as a such file", MODULE);
         return false;
     }
 
@@ -824,7 +830,7 @@ public class SecuredUpload {
         String content = new String(bytesFromFile);
         if (content.toLowerCase().contains("xlink:href=\"http")
                 || content.toLowerCase().contains("<!ENTITY ")) { // Billions laugh attack
-            Debug.logInfo("Linked images inside or Entity in SVG are not allowed for security reason", MODULE);
+            Debug.logError("Linked images inside or Entity in SVG are not allowed for security reason", MODULE);
             return false;
         }
         ArrayList<String> allowed = new ArrayList<>();
@@ -834,7 +840,15 @@ public class SecuredUpload {
     private static boolean isValid(String content, String string, List<String> allowed) {
         boolean isOK = !content.toLowerCase().contains(string) || allowed.contains(string);
         if (!isOK) {
-            Debug.logInfo("The uploaded file contains the string '" + string + "'. It can't be uploaded for security reason", MODULE);
+            Debug.logError("The uploaded file contains the string '" + string + "'. It can't be uploaded for security reason", MODULE);
+        }
+        return isOK;
+    }
+
+    private static boolean isValidForScriptlet(String content, String string) {
+        boolean isOK = !content.contains(string);
+        if (!isOK) {
+            Debug.logError("The uploaded file contains the string '" + string + "'. It can't be uploaded for security reason", MODULE);
         }
         return isOK;
     }
@@ -854,7 +868,7 @@ public class SecuredUpload {
 
     private static List<String> getDeniedWebShellTokens() {
         String deniedTokens = UtilProperties.getPropertyValue("security", "deniedWebShellTokens");
-        return UtilValidate.isNotEmpty(deniedTokens) ? StringUtil.split(deniedTokens, ",") : new ArrayList<>();
+        return UtilValidate.isNotEmpty(deniedTokens) ? StringUtil.split(deniedTokens, "²") : new ArrayList<>();
     }
 
     private static boolean checkMaxLinesLength(String fileToCheck) {

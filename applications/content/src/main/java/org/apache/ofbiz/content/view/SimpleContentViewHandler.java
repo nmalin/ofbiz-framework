@@ -47,6 +47,7 @@ import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
 import org.apache.ofbiz.service.ServiceUtil;
+import org.apache.ofbiz.webapp.control.ConfigXMLReader;
 import org.apache.ofbiz.webapp.view.AbstractViewHandler;
 import org.apache.ofbiz.webapp.view.ViewHandlerException;
 import org.apache.ofbiz.webapp.website.WebSiteWorker;
@@ -62,13 +63,18 @@ public class SimpleContentViewHandler extends AbstractViewHandler {
         rootDir = context.getRealPath("/");
         https = (String) context.getAttribute("https");
     }
+
+    @Override
+    public Map<String, Object> prepareViewContext(HttpServletRequest request, HttpServletResponse response, ConfigXMLReader.ViewMap viewMap) {
+        return UtilMisc.toMap();
+    }
+
     /**
-     * @see org.apache.ofbiz.webapp.view.ViewHandler#render(java.lang.String, java.lang.String, java.lang.String, java.lang.String,
-     * java.lang.String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see org.apache.ofbiz.webapp.view.ViewHandler#render(String, String, String, String, String, HttpServletRequest, HttpServletResponse, Map)
      */
     @Override
     public void render(String name, String page, String info, String contentType, String encoding, HttpServletRequest request,
-                       HttpServletResponse response) throws ViewHandlerException {
+                       HttpServletResponse response, Map<String, Object> context) throws ViewHandlerException {
         LocalDispatcher dispatcher = (LocalDispatcher) request.getAttribute("dispatcher");
         HttpSession session = request.getSession();
         GenericValue userLogin = (GenericValue) session.getAttribute("userLogin");

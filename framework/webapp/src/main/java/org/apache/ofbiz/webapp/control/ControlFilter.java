@@ -39,7 +39,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.entity.GenericValue;
-import org.apache.ofbiz.security.SecurityUtil;
+import org.apache.ofbiz.security.SecuredFreemarker;
 
 /**
  * A Filter used to specify an allowlist of allowed paths to the OFBiz application.
@@ -155,7 +155,7 @@ public class ControlFilter extends HttpFilter {
             if (!LoginWorker.hasBasePermission(userLogin, req)) { // Allows UEL and FlexibleString (OFBIZ-12602)
                 if (!GenericValue.getStackTraceAsString().contains("ControlFilterTests")
                         && null == System.getProperty("SolrDispatchFilter") // Allows Solr tests
-                        && SecurityUtil.containsFreemarkerInterpolation(req, resp, uri)) {
+                        && SecuredFreemarker.containsFreemarkerInterpolation(req, resp, uri)) {
                     return;
                 }
             }

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.regex.Pattern;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -44,6 +45,7 @@ import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 import javax.script.SimpleScriptContext;
 
+import org.apache.ofbiz.base.crypto.HashCrypt;
 import org.apache.ofbiz.base.location.FlexibleLocation;
 import org.apache.ofbiz.base.util.cache.UtilCache;
 import org.apache.ofbiz.common.scripting.ScriptHelperImpl;
@@ -69,9 +71,12 @@ public final class ScriptUtil {
     /** The <code>ScriptHelper</code> key. */
     public static final String SCRIPT_HELPER_KEY = "ofbiz";
     private static final UtilCache<String, CompiledScript> PARSED_SCRIPTS = UtilCache.createUtilCache("script.ParsedScripts", 0, 0, false);
+    private static final UtilCache<String, HashSet<String>> ALLOWED_SCRIPTS = UtilCache.createUtilCache("script.allowed.Scripts", 0, 0, false);
     private static final Object[] EMPTY_ARGS = {};
     /** A set of script names - derived from the JSR-223 scripting engines. */
     public static final Set<String> SCRIPT_NAMES;
+    private static final Pattern DENIEDSCRIPTLETSTOKENS = initScriptletsTokensPattern();
+    private static final Boolean USEDENIEDSCRIPTLETSTOKENS = UtilProperties.getPropertyAsBoolean("security", "useDeniedScriptletsTokens", false);
 
     static {
         Set<String> writableScriptNames = new HashSet<>();
@@ -388,6 +393,9 @@ public final class ScriptUtil {
         Class<?> scriptClass = null;
         if ("groovy".equals(language)) {
             try {
+                if (!isSafeScript(language, script)) {
+                    throw new RuntimeException("See the log for more information");
+                }
                 scriptClass = GroovyUtil.parseClass(script);
             } catch (IOException e) {
                 Debug.logError(e, MODULE);
@@ -395,6 +403,39 @@ public final class ScriptUtil {
             }
         }
         return scriptClass;
+    }
+
+    private static boolean isSafeScript(String language, String script) throws IOException {
+        HashSet<String> allowedScript = ALLOWED_SCRIPTS.putIfAbsentAndGet(language, initAllowedScriptHashes());
+        String scriptHash = HashCrypt.digestHash("SHA", script.getBytes());
+        boolean canExecuteScript = allowedScript.contains(scriptHash);
+        if (!canExecuteScript) {
+            if (checkIfScriptIsUnsafe(script)) {
+                Debug.logWarning(String.format("Tried to execute unauthorized script \n **** \n%s\n **** "
+                                + "\nif it's safe script you can add the following hash to security.allowedScriptlets: %s",
+                        script, scriptHash), MODULE);
+                return false;
+            }
+            allowedScript.add(scriptHash);
+        }
+        return true;
+    }
+    public static boolean checkIfScriptIsUnsafe(String content) throws IOException {
+        if (content == null) {
+            return false;
+        }
+        return USEDENIEDSCRIPTLETSTOKENS && DENIEDSCRIPTLETSTOKENS.matcher(content).find();
+    }
+
+    private static Pattern initScriptletsTokensPattern() {
+        String deniedScriptletsTokens = UtilProperties.getPropertyValue("security", "deniedScriptletsTokens", "");
+        return Pattern.compile(deniedScriptletsTokens);
+    }
+
+    private static HashSet<String> initAllowedScriptHashes() {
+        List<String> allowedScripts = StringUtil.split(UtilProperties.getPropertyValue("security",
+                "allowedScriptletHashes", ""), ",");
+        return allowedScripts != null ? new HashSet<>(allowedScripts) : new HashSet<>();
     }
 
     private ScriptUtil() { }
