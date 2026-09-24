@@ -504,14 +504,14 @@ public final class UtilCache<K, V> implements Serializable, EvictionListener<Obj
     /** Returns the number of cache misses from entries that are expired
      * @return The number of cache misses
      */
-    private long getMissCountExpired() {
+    public long getMissCountExpired() {
         return this.missCountExpired.get();
     }
 
     /** Returns the number of cache misses from entries that are have had the soft reference cleared out (by garbage collector and such)
      * @return The number of cache misses
      */
-    private long getMissCountSoftRef() {
+    public long getMissCountSoftRef() {
         return this.missCountSoftRef.get();
     }
 

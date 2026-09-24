@@ -26,10 +26,10 @@ context.hasUtilCacheEdit = security.hasEntityPermission('UTIL_CACHE', '_EDIT', s
 
 cacheList = []
 totalCacheMemory = 0.0
-names = new TreeSet(UtilCache.getUtilCacheTableKeySet())
+Set names = new TreeSet(UtilCache.getUtilCacheTableKeySet())
 names.each { cacheName ->
-    utilCache = UtilCache.findCache(cacheName)
-    cache = [
+    UtilCache utilCache = UtilCache.findCache(cacheName)
+    Map cache = [
             cacheName: utilCache.getName(),
             cacheSize: UtilFormatOut.formatQuantity(utilCache.size()),
             hitCount: UtilFormatOut.formatQuantity(utilCache.getHitCount()),
@@ -45,17 +45,15 @@ names.each { cacheName ->
             cacheMemory: utilCache.getSizeInBytes()
     ]
     totalCacheMemory += cache.cacheMemory
-    cacheList.add(cache)
+    cacheList << cache
 }
-sortField = parameters.sortField
-if (sortField) {
-    context.cacheList = UtilMisc.sortMaps(cacheList, UtilMisc.toList(sortField))
-} else {
-    context.cacheList = cacheList
-}
+String sortField = parameters.sortField
+context.cacheList = sortField
+        ? UtilMisc.sortMaps(cacheList, [sortField])
+        : cacheList
 context.totalCacheMemory = totalCacheMemory
 
-rt = Runtime.getRuntime()
+Runtime rt = Runtime.getRuntime()
 memoryInfo = [
         memory: UtilFormatOut.formatQuantity(rt.totalMemory()),
         freeMemory: UtilFormatOut.formatQuantity(rt.freeMemory()),
